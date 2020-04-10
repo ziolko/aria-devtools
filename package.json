@@ -3,18 +3,45 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.1",
+    "@babel/preset-typescript": "^7.9.0",
+    "@egjs/list-differ": "^1.0.0",
+    "@popperjs/core": "^2.0.6",
+    "@reduxjs/toolkit": "^1.2.5",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
-    "react-scripts": "3.3.1"
+    "@types/lodash": "^4.14.149",
+    "@types/mocha": "^7.0.2",
+    "@types/react-redux": "^7.1.7",
+    "@types/uuid": "^7.0.2",
+    "adiff": "^0.2.13",
+    "aria-query": "^4.0.2",
+    "babel-plugin-styled-components": "^1.10.7",
+    "chai": "^4.2.0",
+    "http-proxy": "^1.18.0",
+    "jsondiffpatch": "^0.4.1",
+    "lodash": "^4.17.15",
+    "mobx": "^5.15.4",
+    "mobx-react": "^6.1.8",
+    "mocha": ">=7",
+    "mochawesome": "^5.0.0",
+    "react": ">= 16.8.0",
+    "react-dom": ">= 16.8.0",
+    "react-is": ">= 16.8.0",
+    "react-redux": "^7.2.0",
+    "react-scripts": "3.3.1",
+    "react-shadow": "^17.6.0",
+    "source-map-support": "^0.5.16",
+    "styled-components": "^5.0.0",
+    "uuid": "^7.0.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "parcel src/index.js --hmr-hostname localhost --https",
+    "start:http": "parcel src/index.js --hmr-hostname localhost",
+    "test": "parcel test/index.html --open --port 3000",
+    "build": "parcel build src/index.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,5 +57,10 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@types/styled-components": "^5.0.1",
+    "typescript": "^3.7.5"
   }
 }

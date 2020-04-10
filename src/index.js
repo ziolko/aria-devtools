@@ -1,12 +1,29 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
 
-ReactDOM.render(<App />, document.getElementById('root'));
+function getDiv() {
+  if (document.getElementById("root-a11-view")) {
+    return document.getElementById("root-a11-view");
+  }
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+  const div = document.createElement("div");
+  div.setAttribute("id", "root-a11-view");
+  div.setAttribute("aria-hidden", "true");
+
+  document.body.appendChild(div);
+  return div;
+}
+
+function render() {
+  const App = require("./App").default;
+  ReactDOM.unmountComponentAtNode(getDiv());
+  ReactDOM.render(<App />, getDiv());
+}
+
+render();
+
+if (module.hot) {
+  module.hot.accept(function() {
+    render();
+  });
+}

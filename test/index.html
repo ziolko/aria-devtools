@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+  </head>
+  <body>
+    <div
+      id="sandbox"
+      style="position: absolute; width: 0; height: 0; opacity:0; z-index: -1"
+    ></div>
+    <div id="mocha"></div>
+    <script src="https://cdn.jsdelivr.net/npm/source-map-support@0.5.16/browser-source-map-support.js"></script>
+    <script>sourceMapSupport.install();</script>
+    <script src="./index.ts"></script>
+  </body>
+</html>
