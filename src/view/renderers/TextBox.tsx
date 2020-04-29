@@ -1,12 +1,11 @@
 import styled, { css } from "styled-components";
 import React from "react";
-import { borderRadius } from "./utils";
+import { borderRadius, useFocusable } from "./utils";
 import { ComponentProps } from "./utils";
 import { observer } from "mobx-react";
 import { HorizontalBlockTemplate } from "./Heading";
-import { getFocusStyle } from "./Option";
 
-const TextBoxContent = styled.span<{ multiline: boolean; invalid: boolean }>`
+export const TextBoxContent = styled.span<{ multiline?: boolean; invalid?: boolean }>`
   display: block;
   margin-top: 5px;
   padding: 3px 5px;
@@ -42,8 +41,10 @@ const ValidityIcon = styled.span<{ invalid: boolean }>`
 `;
 
 export default observer(function TextBox({ node }: ComponentProps) {
+  const [ref, style] = useFocusable(node);
+
   return (
-    <HorizontalBlockTemplate header={"textbox"}>
+    <HorizontalBlockTemplate header={node.role} ref={ref}>
       <HeaderPart>{node.accessibleName}</HeaderPart>{" "}
       <HeaderPart>
         {node.attributes.ariaRequired && "⭐"}{" "}
@@ -52,7 +53,7 @@ export default observer(function TextBox({ node }: ComponentProps) {
       <TextBoxContent
         multiline={node.attributes.ariaMultiline}
         invalid={node.attributes.ariaInvalid}
-        style={getFocusStyle(node)}
+        style={style}
       >
         {node.attributes.htmlValue}&nbsp;
       </TextBoxContent>

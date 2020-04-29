@@ -12,7 +12,7 @@ export default observer(function Paragraph({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
   return (
     <ParagraphWrapper data-role="paragraph">
-      {render(node.htmlChildren)}
+      {render(node.children)}
     </ParagraphWrapper>
   );
 });

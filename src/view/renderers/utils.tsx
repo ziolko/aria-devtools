@@ -1,12 +1,5 @@
 import React from "react";
-import { css } from "styled-components";
 import { AOMElement, NodeElement, TextElement } from "../../AOM/types";
-
-export const focusStyle = css`
-  box-shadow: 0 0 0 1px #222, 0 0 0 3px yellow;
-  z-index: 1;
-  position: relative;
-`;
 
 export const borderRadius = "5px";
 
@@ -28,3 +21,34 @@ export function isDescendantOf(
 
   return false;
 }
+
+export function useFocusable(
+  node: NonNullable<NodeElement>
+): [React.Ref<any>, object] {
+  const ref = React.useRef<Element>(null);
+
+  const isFocused = node.isFocused;
+  const hasActiveDescendant = node.relations.ariaActiveDescendants.length > 0;
+  const isActiveDescendant = node.relations.ariaActiveDescendantOf.some(x => x.isFocused);
+
+  const style = React.useMemo(() => {
+    if ((isFocused && !hasActiveDescendant) || isActiveDescendant) {
+      return {
+        position: "relative",
+        boxShadow: `0 0 0 1px #222, 0 0 0 3px yellow`,
+        zIndex: 1
+      };
+    } else {
+      return {};
+    }
+  }, [isFocused, hasActiveDescendant, isActiveDescendant]);
+
+  React.useEffect(() => {
+    if (isActiveDescendant || (isFocused && !hasActiveDescendant)) {
+      ref.current?.scrollIntoView({ block: "nearest" });
+    }
+  }, [isFocused, isActiveDescendant, hasActiveDescendant]);
+
+  return [ref, style];
+}
+

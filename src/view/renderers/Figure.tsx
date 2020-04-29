@@ -18,7 +18,7 @@ export default observer(function Figure({ node }: ComponentProps) {
   return (
     <BlockTemplate role={node.role}>
       <FigureWrapper data-type="figure">
-        {render(node.htmlChildren)}
+        {render(node.children)}
       </FigureWrapper>
     </BlockTemplate>
   );

@@ -21,6 +21,9 @@ import Label from "./Label";
 import { ComponentProps } from "./utils";
 import Radio from "./Radio";
 import Checkbox from "./Checkbox";
+import Combobox from "./Combobox";
+import Cell from "./Cell";
+import Table from "./Table";
 
 type RendererMap = { [key in string]: React.FunctionComponent<ComponentProps> };
 
@@ -56,9 +59,21 @@ const renderers: RendererMap = {
   list: List,
   listitem: ListItem,
   separator: Separator,
-  combobox: Block,
+  combobox: Combobox,
   search: Block,
   listbox: Block,
+  alert: Block,
+  menubar: Block,
+  menu: Block,
+  note: Block,
+  table: Table,
+  row: Block,
+  rowgroup: Block,
+  grid: Table,
+  cell: Block,
+  gridcell: Block,
+  columnheader: Block,
+  rowheader: Block,
   option: Option
 };
 
@@ -77,9 +92,7 @@ export default function render(element: AOMElement | AOMElement[]): any {
 
   if (element.role === "text") {
     const textNode = element as TextElement;
-    return textNode.text.trim()
-      ? React.createElement(Text, { node: textNode, key: textNode.key })
-      : textNode.text;
+    return textNode.text.trim() ? React.createElement(Text, { node: textNode, key: textNode.key }) : textNode.text;
   }
 
   const node = element as NodeElement;

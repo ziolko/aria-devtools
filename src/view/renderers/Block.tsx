@@ -1,27 +1,25 @@
 import styled from "styled-components";
 import React from "react";
-import { borderRadius, focusStyle } from "./utils";
+import { borderRadius, useFocusable } from "./utils";
 import { renderContext, ComponentProps } from "./utils";
 import { observer } from "mobx-react";
 import {
   AOMElement,
   AriaRole,
+  NodeElement,
   TextElement
 } from "../../AOM/types";
 
-const color = "#333377";
-
 const BlockWrapper = styled.div<{
   role: string;
+  color: string;
   isHovered: boolean;
-  isFocused: boolean;
 }>`
   margin: 10px 0;
   position: relative;
   min-height: ${props => props.role.length * 7.5 + 20}px;
   border-radius: ${borderRadius};
-  ${props => props.isHovered && `background: ${color}`};
-  ${props => props.isFocused && focusStyle};
+  ${props => props.isHovered && `background: ${props.color}`};
 `;
 
 const BlockMeta = styled.div`
@@ -29,13 +27,13 @@ const BlockMeta = styled.div`
   cursor: pointer;
 `;
 
-const BlockRole = styled.div<{ hasHeader: boolean }>`
+const BlockRole = styled.div<{ hasHeader: boolean; color: string }>`
   position: absolute;
   left: 0;
   top: 0;
   bottom: 0;
   writing-mode: vertical-rl;
-  background: ${color};
+  background: ${props => props.color};
   padding: 10px 0;
   line-height: 20px;
   text-transform: uppercase;
@@ -55,9 +53,9 @@ const BlockRoleContent = styled.span`
   top: 10px;
 `;
 
-const BlockHeader = styled.div`
+const BlockHeader = styled.div<{ color: string }>`
   width: fit-content;
-  background: ${color};
+  background: ${props => props.color};
   padding: 0 10px;
   line-height: 20px;
   border-radius: 0 ${borderRadius} ${borderRadius} 0;
@@ -72,7 +70,7 @@ const BlockHeader = styled.div`
 
   ${BlockWrapper}:hover > ${BlockMeta} > & {
     border-color: white;
-    border-left-color: ${color};
+    border-left-color: ${props => props.color};
     opacity: 1;
 
     // Fix the weird gap in border;
@@ -102,76 +100,53 @@ export interface BlockTemplateProps {
   role: string | null;
   header?: string;
   children: any;
-  isFocused: boolean;
+  style?: object;
+  color?: string;
 }
 
-export function BlockTemplate({
-  role,
-  header,
-  children,
-  isFocused
-}: BlockTemplateProps) {
+export const BlockTemplate = React.forwardRef(function BlockTemplate(
+  { role, header, children, style, color }: BlockTemplateProps,
+  ref: React.Ref<HTMLDivElement>
+) {
+  color = color ?? "#333377";
+
   const [isHovered, setHovered] = React.useState(false);
 
   return (
     <BlockWrapper
-      role={role}
+      ref={ref}
+      style={style}
+      color={color}
+      role={role ?? ""}
       isHovered={isHovered}
-      isFocused={isFocused}
-      data-type="block"
     >
       <BlockMeta
         onMouseOver={() => setHovered(true)}
         onMouseOut={() => setHovered(false)}
       >
-        <BlockRole hasHeader={!!header}>
+        <BlockRole hasHeader={!!header} color={color}>
           <BlockRoleContent>{role}</BlockRoleContent>
         </BlockRole>
-        {header && <BlockHeader>{header}</BlockHeader>}
+        {header && <BlockHeader color={color}>{header}</BlockHeader>}
       </BlockMeta>
       <BlockContent>{children}</BlockContent>
     </BlockWrapper>
   );
-}
-
-const needsAccessibleName: AriaRole[] = ["image", "img"];
-const needsContent: AriaRole[] = ["presentation", "none", "form", "list"];
-
-function hasContent(item: AOMElement): boolean {
-  if (item instanceof TextElement) {
-    return item.text.trim() !== "";
-  }
-
-  if (!item || item.isHidden) {
-    return false;
-  }
-
-  if(item.attributes.tabindex >= 0) {
-    return true;
-  }
-
-  if (needsAccessibleName.includes(item.role)) {
-    return item.accessibleName.trim() !== "";
-  }
-
-  if (needsContent.includes(item.role)) {
-    return item.htmlChildren.some(hasContent);
-  }
-
-  return true;
-}
+});
 
 export default observer(function({ node }: ComponentProps) {
+  const [ref, style] = useFocusable(node);
   const render = React.useContext(renderContext);
+
   const label = node.hasCustomAccessibleName ? node.accessibleName : undefined;
 
-  if (!hasContent(node)) {
-    return null;
-  }
+  // if (!node.hasContent) {
+  //   return null;
+  // }
 
   return (
-    <BlockTemplate role={node.role} header={label} isFocused={node.isFocused}>
-      {render(node.htmlChildren)}
+    <BlockTemplate ref={ref} style={style} role={node.role} header={label}>
+      {render(node.children)}
     </BlockTemplate>
   );
 });

@@ -1,5 +1,5 @@
 import { AOMElement, NodeElement, TextElement } from "./types";
-import { getNodeKey, isFocused, isHidden } from "./utils";
+import { getNodeKey, isFocused, isHidden, isInline } from "./utils";
 
 const ignoredHtmlElements = ["script", "noscript", "style"];
 
@@ -24,7 +24,8 @@ export default function traverse(htmlNode: Node): AOMElement {
     key: getNodeKey(node),
     htmlTag: tagName,
     isHidden: isHidden(node),
-    isFocused: isFocused(node)
+    isFocused: isFocused(node),
+    isInline: isInline(node)
   });
 
   const attributes = result.getRawAttributes();

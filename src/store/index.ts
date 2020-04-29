@@ -6,18 +6,16 @@ import {
   NodeElement,
   TextElement,
   Aria,
-  Context
+  Context,
+  HtmlTableContext, AriaTableContext
 } from "../AOM/types";
 import { observable } from "mobx";
-import {
-  getMap,
-  reconcileChildListOrder,
-  reconcileFields
-} from "../AOM/reconcile";
+import { getMap, reconcileChildListOrder, reconcileFields } from "../AOM/reconcile";
 
 class RelationsForId {
   @observable elementsWithId: NonNullable<NodeElement>[] = [];
   @observable ariaLabelOf: NonNullable<NodeElement>[] = [];
+  @observable ariaOwnedBy: NonNullable<NodeElement>[] = [];
   @observable ariaActiveDescendantOf: NonNullable<NodeElement>[] = [];
   @observable htmlLabel: NonNullable<NodeElement>[] = [];
 }
@@ -43,6 +41,7 @@ export default class Store {
       this.setContext(element, "formContext", "form", "input");
       this.setContext(element, "labelContext", "label", "input", "textarea");
       this.setContext(element, "fieldsetContext", "fieldset", "legend");
+      this.setTableContext(element);
 
       element.htmlChildren.forEach(item => item && this.register(item));
     }
@@ -69,7 +68,7 @@ export default class Store {
 
     this.updateReferenceRelations(el, el.attributes, update.attributes);
 
-    reconcileFields(el, update, ["role", "isFocused", "isHidden"]);
+    reconcileFields(el, update, ["isFocused", "isHidden", "isInline"]);
 
     reconcileFields(el.getRawAttributes(), update.getRawAttributes());
     reconcileFields(el.getRawProperties(), update.getRawProperties());
@@ -87,7 +86,9 @@ export default class Store {
 
     // Register new children in store
     sourceMap.forEach(node => {
-      if (!targetMap.has(node.key)) {
+      if (targetMap.has(node.key)) {
+        this.update(node);
+      } else {
         node.htmlParent = el;
         this.register(node);
       }
@@ -113,23 +114,17 @@ export default class Store {
     this.keyToAomElement.delete(element.key);
   }
 
-  getElement(key: AomKey) {
-    return this.keyToAomElement.get(key);
+  getElement(key?: AomKey) {
+    return key && this.keyToAomElement.get(key);
   }
 
-  private updateReferenceRelations(
-    node: NodeElement,
-    oldAttributes: Aria | null,
-    newAttributes: Aria | null
-  ) {
+  private updateReferenceRelations(node: NodeElement, oldAttributes: Aria | null, newAttributes: Aria | null) {
     if (oldAttributes?.id !== newAttributes?.id) {
       if (oldAttributes?.id) {
-        removeFrom(
-          this.getRelationsForId(oldAttributes?.id).elementsWithId,
-          node
-        );
+        removeFrom(this.getRelationsForId(oldAttributes?.id).elementsWithId, node);
         node.relations.ariaLabelOf = [];
         node.relations.ariaActiveDescendantOf = [];
+        node.relations.ariaOwnedBy = [];
         node.relations.htmlForLabelledBy = [];
       }
 
@@ -139,6 +134,7 @@ export default class Store {
         rel.elementsWithId.push(node);
         node.relations.ariaLabelOf = rel.ariaLabelOf;
         node.relations.ariaActiveDescendantOf = rel.ariaActiveDescendantOf;
+        node.relations.ariaOwnedBy = rel.ariaOwnedBy;
         node.relations.htmlForLabelledBy = rel.htmlLabel;
       }
     }
@@ -157,6 +153,14 @@ export default class Store {
       newAttributes?.ariaActiveDescendant,
       "ariaActiveDescendants",
       "ariaActiveDescendantOf"
+    );
+
+    this.updateSingleReferenceRelation(
+      node,
+      oldAttributes?.ariaOwns,
+      newAttributes?.ariaOwns,
+      "ariaOwns",
+      "ariaOwnedBy"
     );
 
     this.updateSingleReferenceRelation(
@@ -220,6 +224,16 @@ export default class Store {
 
     if (memberTags.includes(node.htmlTag)) {
       node.relations[contextName]?.descendants.push(node);
+    }
+  }
+
+  private setTableContext(node: NodeElement) {
+    if (node.htmlTag === "table") {
+      node.relations.tableContext = new HtmlTableContext(node);
+    } else if (node.role === "table" || node.role === "grid") {
+      node.relations.tableContext = new AriaTableContext(node);
+    } else if (node.htmlParent) {
+      node.relations.tableContext = node.htmlParent.relations.tableContext;
     }
   }
 }

@@ -12,7 +12,7 @@ export default observer(function Separator({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
   return (
     <SeparatorWrapper data-role="separator">
-      {render(node.htmlChildren)}
+      {render(node.children)}
     </SeparatorWrapper>
   );
 });

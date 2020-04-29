@@ -2,9 +2,9 @@ import React from "react";
 import {
   renderContext,
   ComponentProps,
-  focusStyle,
   borderRadius,
-  isDescendantOf
+  isDescendantOf,
+  useFocusable
 } from "./utils";
 import { observer } from "mobx-react";
 import { BlockTemplate } from "./Block";
@@ -53,16 +53,18 @@ function isLabelDescendantOrSiblingOfLabelledNode(label: NodeElement) {
 }
 
 export default observer(function Null({ node }: ComponentProps) {
+
   const render = React.useContext(renderContext);
-  const content = render(node.htmlChildren);
+  const content = render(node.children);
+  const [ref, style] = useFocusable(node);
 
   if (typeof content === "string" && content.trim() === "") {
     return null;
   }
 
-  if (node.isFocused || (node.attributes.tabIndex as number) >= 0) {
+  if (node.htmlTag !== "body" && (node.isFocused || (node.attributes.tabindex as number) >= 0)) {
     return (
-      <BlockTemplate role={"no role"} isFocused={node.isFocused}>
+      <BlockTemplate  role={`<${node.htmlTag}>`} ref={ref} style={style} color="#666">
         {content}
       </BlockTemplate>
     );
@@ -77,9 +79,11 @@ export default observer(function Null({ node }: ComponentProps) {
   }
 
   return (
-    <div data-html-tag={node.htmlTag} style={{ display: "contents" }}>
+    <div data-key={node.key} data-html-tag={node.htmlTag} style={{ display: "contents" }}>
       {node.htmlTag === "label" && <NewLine />}
+      {!node.isInline && ' '}
       {content}
+      {!node.isInline && ' '}
     </div>
   );
 });

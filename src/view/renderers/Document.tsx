@@ -5,7 +5,7 @@ import { observer } from "mobx-react";
 
 export default observer(function Document({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
-  const children = render(node.htmlChildren);
+  const children = render(node.children);
 
   return node.htmlParent ? <Block node={node} /> : children;
 });

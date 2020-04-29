@@ -1,9 +1,8 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import React from "react";
-import { focusStyle, borderRadius } from "./utils";
+import { borderRadius, useFocusable } from "./utils";
 import { ComponentProps } from "./utils";
 import { observer } from "mobx-react";
-import { getFocusStyle } from "./Option";
 
 const color = "#aaa";
 
@@ -43,9 +42,10 @@ const RadioLabel = styled.span`
 
 export default observer(function Radio({ node }: ComponentProps) {
   const [isHovered, setHovered] = React.useState(false);
+  const [ref, style] = useFocusable(node);
 
   return (
-    <RadioButtonWrapper isHovered={isHovered} style={getFocusStyle(node)}>
+    <RadioButtonWrapper isHovered={isHovered} ref={ref} style={style}>
       <RadioIcon
         onMouseOver={() => setHovered(true)}
         onMouseOut={() => setHovered(false)}

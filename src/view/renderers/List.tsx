@@ -15,7 +15,7 @@ export default observer(function List({ node }: ComponentProps) {
 
   return (
     <BlockTemplate role={node.role} header={header}>
-      {render(node.htmlChildren)}
+      {render(node.children)}
     </BlockTemplate>
   );
 });

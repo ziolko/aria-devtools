@@ -16,6 +16,11 @@ export function isFocused(el: HTMLElement) {
   return document.activeElement === el && el !== document.body;
 }
 
+export function isInline(el: HTMLElement) {
+  const { display } = window.getComputedStyle(el);
+  return display === "inline";
+}
+
 const nodeKeys = new WeakMap<Node, string>();
 export function getNodeKey(node: Node): string {
   if (!nodeKeys.has(node)) {
@@ -84,6 +89,7 @@ const tagsWithNullRoleMapping = [
   "br",
   "canvas",
   "caption",
+  "center",
   "cite",
   "code",
   "col",
@@ -163,4 +169,39 @@ export function isRootLandmark(node: NodeElement) {
     if (sectioningTags.includes(asc.htmlTag)) return false;
   }
   return true;
+}
+
+export function findAncestor(
+  node: NodeElement | null | undefined,
+  predicate: (node: NodeElement) => boolean
+) {
+  while ((node = node?.htmlParent) != null) {
+    if (predicate(node)) {
+      return node;
+    }
+  }
+
+  return null;
+}
+
+export function findDescendants(
+  node: NodeElement | null | undefined,
+  predicate: (node: NodeElement) => boolean
+) {
+  const result: NodeElement[] = [];
+
+  node?.htmlChildren.forEach(child => {
+    if (child instanceof TextElement) {
+      return;
+    }
+
+    if (predicate(child)) {
+      result.push(child);
+      return;
+    }
+
+    result.push(...findDescendants(child, predicate));
+  });
+
+  return result;
 }

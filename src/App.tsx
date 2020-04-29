@@ -19,7 +19,7 @@ export default () => {
     document.addEventListener("keydown", handler, true);
 
     return () => document.removeEventListener("keydown", handler, true);
-  }, [isVisible, setVisible]);
+  }, [isVisible, setVisible])
 
   React.useEffect(() => {
     // @ts-ignore

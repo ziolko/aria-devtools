@@ -1,6 +1,6 @@
 import * as React from "react";
 import { expect } from "chai";
-import sandbox from "./sandbox";
+import sandbox, { delay } from "./sandbox";
 import { NodeElement } from "../src/AOM/types";
 
 describe("HTML-ARIA mappings", () => {
@@ -259,8 +259,8 @@ describe("HTML-ARIA mappings", () => {
     expect(AOM.input4.attributes.ariaSetSize, "Separate group").to.equal(1);
   });
 
-  it("Should map checkbox", () => {
-    const { AOM, DOM } = sandbox(
+  it("Should map checkbox", async () => {
+    const { AOM, DOM, updateSideEffects } = sandbox(
       <div>
         <input type="checkbox" id="true" defaultChecked={true} />
         <input type="checkbox" id="false" defaultChecked={false} />
@@ -269,6 +269,7 @@ describe("HTML-ARIA mappings", () => {
     );
 
     (DOM.mixed as HTMLInputElement).indeterminate = true;
+    updateSideEffects();
 
     expect(AOM.true.role).to.be.equal("checkbox");
     expect(AOM.false.role).to.be.equal("checkbox");
@@ -278,10 +279,10 @@ describe("HTML-ARIA mappings", () => {
     expect(AOM.false.attributes.ariaChecked, "not-checked").to.be.equal(
       "false"
     );
-    // TODO - handle dynamic indeterminate change
-    // expect(AOM.mixed.attributes.ariaChecked, "mixed state").to.be.equal(
-    //   "mixed"
-    // );
+
+    expect(AOM.mixed.attributes.ariaChecked, "mixed state").to.be.equal(
+      "mixed"
+    );
   });
 
   it("Should map section without a label to null", () => {
@@ -314,5 +315,20 @@ describe("HTML-ARIA mappings", () => {
   it("Should map dt to a term", () => {
     const { AOM } = sandbox(<dt id="result" />);
     expect(AOM.result.role).to.be.equal("term");
+  });
+
+  it("Should map select with no mutliple and no size > 1 to combobox", () => {
+    const { AOM } = sandbox(<select id="result" />);
+    expect(AOM.result.role).to.be.equal("combobox");
+  });
+
+  it("Should map optgroup to group", () => {
+    const { AOM } = sandbox(<optgroup id="result" />);
+    expect(AOM.result.role).to.be.equal("group");
+  });
+
+  it("Should map option to option", () => {
+    const { AOM } = sandbox(<option id="result" />);
+    expect(AOM.result.role).to.be.equal("option");
   });
 });

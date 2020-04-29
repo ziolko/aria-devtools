@@ -1,20 +1,19 @@
 import styled from "styled-components";
 import React from "react";
-import { focusStyle, borderRadius } from "./utils";
+import { borderRadius, useFocusable } from "./utils";
 import { trimStart } from "../../AOM/utils";
 import { renderContext, ComponentProps } from "./utils";
 import { observer } from "mobx-react";
 
 const color = "#555";
 
-const ListItemWrapper = styled.div<{ isFocused: boolean; isHovered: boolean }>`
+const ListItemWrapper = styled.div<{ isHovered: boolean }>`
   margin: 10px 0;
   padding: 0 4px 0 0;
   border-radius: ${borderRadius};
 
-  ${props => props.isFocused && focusStyle};
   ${props => props.isHovered && `background: ${color}`};
-  
+
   ::after {
     content: "";
     clear: both;
@@ -45,9 +44,10 @@ const ListItemContent = styled.div`
 export default observer(function ListItem({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
   const [isHovered, setHovered] = React.useState(false);
+  const [ref, style] = useFocusable(node);
 
   return (
-    <ListItemWrapper isFocused={node.isFocused} isHovered={isHovered}>
+    <ListItemWrapper ref={ref} style={style} isHovered={isHovered}>
       <Role
         onMouseOver={() => setHovered(true)}
         onMouseOut={() => setHovered(false)}

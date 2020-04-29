@@ -31,9 +31,9 @@ export default observer(function Label({ node }: ComponentProps) {
     );
   }
 
-  if (node.relations.labelOf.length > 0) {
-    return <Collapsed />;
-  }
+  // if (node.relations.labelOf.length > 0) {
+  //   return <Collapsed />;
+  // }
 
-  return <LabelWrapper>{render(node.htmlChildren)}</LabelWrapper>;
+  return <LabelWrapper>{render(node.children)}</LabelWrapper>;
 });

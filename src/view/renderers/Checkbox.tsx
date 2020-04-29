@@ -1,9 +1,8 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import React from "react";
-import { focusStyle, borderRadius } from "./utils";
+import { borderRadius, useFocusable } from "./utils";
 import { ComponentProps } from "./utils";
 import { observer } from "mobx-react";
-import { getFocusStyle } from "./Option";
 
 const color = "#aaa";
 
@@ -27,7 +26,7 @@ const CheckboxIcon = styled.span<{
   border: 1px solid #fff;
   align-items: center;
   justify-content: center;
-  
+
   ::before {
     opacity: ${props => (props.checked === "true" ? 1 : 0)};
     content: "✔️";
@@ -43,9 +42,10 @@ const RadioLabel = styled.span`
 
 export default observer(function Checkbox({ node }: ComponentProps) {
   const [isHovered, setHovered] = React.useState(false);
+  const [ref, style] = useFocusable(node);
 
   return (
-    <CheckboxWrapper isHovered={isHovered} style={getFocusStyle(node)}>
+    <CheckboxWrapper isHovered={isHovered} ref={ref} style={style}>
       <CheckboxIcon
         onMouseOver={() => setHovered(true)}
         onMouseOut={() => setHovered(false)}

@@ -8,6 +8,7 @@ type SandboxResult<T> = {
   DOM: { [key: string]: HTMLElement };
   AOM: { [key: string]: NodeElement };
   render: (props: T) => Promise<void>;
+  updateSideEffects: () => void;
 };
 
 const sandboxRoot = document.getElementById("sandbox");
@@ -56,6 +57,7 @@ export default function sandbox<T>(
           render(createElement(markup, props), sandboxRoot, resolve)
         );
       }
-    }
+    },
+    updateSideEffects: () => observer.updateSideEffects()
   };
 }

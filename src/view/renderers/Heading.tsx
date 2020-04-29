@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React from "react";
-import { borderRadius, focusStyle } from "./utils";
+import { borderRadius, useFocusable } from "./utils";
 import { renderContext, ComponentProps } from "./utils";
 import { trimStart } from "../../AOM/utils";
 import { observer } from "mobx-react";
@@ -36,32 +36,36 @@ export interface HorizontalBlockTemplateProps {
   style?: object;
 }
 
-export function HorizontalBlockTemplate({
-  header,
-  children,
-  style
-}: HorizontalBlockTemplateProps) {
-  const [isHovered, setHovered] = React.useState(false);
+export const HorizontalBlockTemplate = React.forwardRef(
+  (
+    { header, children, style }: HorizontalBlockTemplateProps,
+    ref: React.Ref<any>
+  ) => {
+    const [isHovered, setHovered] = React.useState(false);
 
-  return (
-    <HeadingWrapper isHovered={isHovered} style={style}>
-      <Role
-        onMouseOver={() => setHovered(true)}
-        onMouseOut={() => setHovered(false)}
-      >
-        {header}
-      </Role>
-      {children}
-    </HeadingWrapper>
-  );
-}
+    return (
+      <HeadingWrapper isHovered={isHovered} style={style} ref={ref}>
+        <Role
+          onMouseOver={() => setHovered(true)}
+          onMouseOut={() => setHovered(false)}
+        >
+          {header}
+        </Role>
+        {children}
+      </HeadingWrapper>
+    );
+  }
+);
 
 export default observer(function Heading({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
+  const [ref, style] = useFocusable(node);
 
   return (
     <HorizontalBlockTemplate
-      header={`${node.role} ${node.attributes.ariaLevel}`}
+      header={`${node.role} ${node.attributes.ariaLevel ?? ""}`}
+      ref={ref}
+      style={style}
     >
       {render(trimStart(node.htmlChildren))}
     </HorizontalBlockTemplate>

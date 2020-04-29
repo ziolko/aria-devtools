@@ -46,6 +46,9 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "prettier": {
+    "printWidth": 120
+  },
   "browserslist": {
     "production": [
       ">0.2%",

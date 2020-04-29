@@ -1,19 +1,18 @@
 import styled from "styled-components";
 import React from "react";
-import { borderRadius, focusStyle } from "./utils";
+import { borderRadius, useFocusable } from "./utils";
 import { ComponentProps } from "./utils";
 import { observer } from "mobx-react";
 
 const color = "#8b2900";
 
-const ImageWrapper = styled.span<{ isHovered: boolean; isFocused: Boolean }>`
+const ImageWrapper = styled.span<{ isHovered: boolean }>`
   --block-display: inline-block;
 
   margin: 15px 0 10px 0;
   padding: 0 4px 0 0;
   border-radius: ${borderRadius};
 
-  ${props => props.isFocused && focusStyle};
   ${props => props.isHovered && `background: ${color}`};
 `;
 
@@ -44,20 +43,21 @@ const Content = styled.span`
 
 export default observer(function Image({ node }: ComponentProps) {
   const [isHovered, setHovered] = React.useState(false);
+  const [ref, style] = useFocusable(node);
 
   if (node.accessibleName === "") {
     return null;
   }
 
   return (
-    <ImageWrapper isHovered={isHovered} isFocused={node.isFocused}>
+    <ImageWrapper ref={ref} style={style} isHovered={isHovered}>
       <Role
         onMouseOver={() => setHovered(true)}
         onMouseOut={() => setHovered(false)}
       >
         🖼️
       </Role>
-      <Content>{node.accessibleName}</Content>
+      <Content>{node.accessibleName || "<blank>"}</Content>
     </ImageWrapper>
   );
 });
