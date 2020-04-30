@@ -7,9 +7,10 @@ import {
   TextElement,
   Aria,
   Context,
-  HtmlTableContext, AriaTableContext
+  HtmlTableContext,
+  AriaTableContext
 } from "../AOM/types";
-import { observable } from "mobx";
+import { action, observable } from "mobx";
 import { getMap, reconcileChildListOrder, reconcileFields } from "../AOM/reconcile";
 
 class RelationsForId {
@@ -23,6 +24,33 @@ class RelationsForId {
 export default class Store {
   private keyToAomElement = new Map<AomKey, AOMElement>();
   private idToRelations = new Map<HtmlID, RelationsForId>();
+  private focusedNode: NodeElement | null = null;
+
+  @action focus(element: AOMElement) {
+    if (element === this.focusedNode) {
+      return;
+    }
+
+    if (this.focusedNode) {
+      this.focusedNode.isFocused = false;
+      for (let node: NodeElement | null = this.focusedNode; node != null; node = node.ariaParent) {
+        node.containsFocus = false;
+      }
+      this.focusedNode = null;
+    }
+
+    if (element instanceof NodeElement) {
+      element.isFocused = true;
+      this.focusedNode = element;
+
+      for (let node: NodeElement | null = element; node != null; node = node.ariaParent) {
+        node.containsFocus = true;
+        if (node.relations.tableContext) {
+          node.relations.tableContext.visibleCell = node;
+        }
+      }
+    }
+  }
 
   register(element: AOMElement) {
     if (!element) {
@@ -44,6 +72,10 @@ export default class Store {
       this.setTableContext(element);
 
       element.htmlChildren.forEach(item => item && this.register(item));
+
+      if (element.isFocused) {
+        this.focus(element);
+      }
     }
 
     return element;
@@ -68,7 +100,7 @@ export default class Store {
 
     this.updateReferenceRelations(el, el.attributes, update.attributes);
 
-    reconcileFields(el, update, ["isFocused", "isHidden", "isInline"]);
+    reconcileFields(el, update, ["isHidden", "isInline"]);
 
     reconcileFields(el.getRawAttributes(), update.getRawAttributes());
     reconcileFields(el.getRawProperties(), update.getRawProperties());
@@ -95,6 +127,10 @@ export default class Store {
     });
 
     reconcileChildListOrder(el.htmlChildren, update.htmlChildren, this);
+
+    if (!el.isFocused && update.isFocused) {
+      this.focus(el);
+    }
   }
 
   unregister(element: AOMElement) {
@@ -109,13 +145,17 @@ export default class Store {
       element.relations.fieldsetContext = null;
 
       element.htmlChildren.forEach(item => item && this.unregister(item));
+
+      if (element.isFocused) {
+        this.focus(null);
+      }
     }
 
     this.keyToAomElement.delete(element.key);
   }
 
   getElement(key?: AomKey) {
-    return key && this.keyToAomElement.get(key);
+    return key ? this.keyToAomElement.get(key) : null;
   }
 
   private updateReferenceRelations(node: NodeElement, oldAttributes: Aria | null, newAttributes: Aria | null) {

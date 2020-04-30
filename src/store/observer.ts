@@ -37,16 +37,11 @@ export default class Observer {
 
   private onFocus = (e: FocusEvent) => {
     const el = this.store.getElement(getNodeKey(e.target as Node));
-    if (el instanceof NodeElement) {
-      el.isFocused = true;
-    }
+    this.store.focus(el);
   };
 
   private onBlur = (e: FocusEvent) => {
-    const el = this.store.getElement(getNodeKey(e.target as Node));
-    if (el instanceof NodeElement) {
-      el.isFocused = false;
-    }
+    this.store.focus(null);
   };
 
   private onInput = (event: any) => {
@@ -66,7 +61,6 @@ export default class Observer {
   };
 
   private previousState = new WeakMap<Node, any>();
-  private focused?: string;
 
   updateSideEffects = () => {
     runInAction("update side effects", () => {
@@ -77,14 +71,12 @@ export default class Observer {
         }
       });
 
-      document
-        .querySelectorAll('input[type="checkbox"]')
-        .forEach((node: any) => {
-          if (this.previousState.get(node) !== node.indeterminate) {
-            this.updateNode(node);
-            this.previousState.set(node, node.indeterminate);
-          }
-        });
+      document.querySelectorAll('input[type="checkbox"]').forEach((node: any) => {
+        if (this.previousState.get(node) !== node.indeterminate) {
+          this.updateNode(node);
+          this.previousState.set(node, node.indeterminate);
+        }
+      });
 
       document.querySelectorAll("input").forEach((node: any) => {
         if (this.previousState.get(node) !== node.value) {
@@ -94,20 +86,9 @@ export default class Observer {
       });
 
       const focusedKey = getNodeKey(document.activeElement as Node);
+      const focusedEl = this.store.getElement(focusedKey);
 
-      if (focusedKey !== this.focused) {
-        const oldEl = this.store.getElement(this.focused);
-        if (oldEl instanceof NodeElement) {
-          oldEl.isFocused = false;
-        }
-
-        const newEl = this.store.getElement(focusedKey);
-        if (newEl instanceof NodeElement) {
-          newEl.isFocused = true;
-        }
-
-        this.focused = focusedKey;
-      }
+      this.store.focus(focusedEl);
     });
   };
 

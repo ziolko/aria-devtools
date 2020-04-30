@@ -1,6 +1,6 @@
 import React from "react";
 import { BlockTemplate } from "./Block";
-import { renderContext, ComponentProps, borderRadius } from "./utils";
+import { renderContext, ComponentProps, borderRadius, useFocusable } from "./utils";
 import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
 
@@ -16,7 +16,7 @@ const Navigation = styled.div`
   grid-template-rows: 30px auto;
 `;
 
-const Button = styled.div<{ disabled: boolean }>`
+const Button = styled.div`
   display: inline-block;
   border-radius: ${borderRadius};
   border: 1px dashed #555;
@@ -26,16 +26,6 @@ const Button = styled.div<{ disabled: boolean }>`
   :hover {
     background: #777;
   }
-
-  ${props =>
-    props.disabled &&
-    css`
-      color: #777;
-      cursor: not-allowed;
-      :hover {
-        background: #333;
-      }
-    `};
 `;
 
 const RowNav = styled.div`
@@ -76,24 +66,23 @@ const Role = styled.div`
   }
 `;
 
-function findNextIndex<T>(list: T[], start: number, step: number, condition: (arg: T) => boolean) {
-  for (let i = start; i >= 0 && i < list.length; i += step) {
-    if (condition(list[i])) return i;
-  }
-  return null;
-}
+const TableCell = observer(function TableCell({ node, style = {}, className }: ComponentProps) {
+  const render = React.useContext(renderContext);
+  const [ref, focusStyle] = useFocusable(node);
+
+  return (
+    <div className={className} ref={ref} style={{ ...focusStyle, ...style }}>
+      {render(node.children)}
+    </div>
+  );
+});
 
 export default observer(function Table({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
 
-  const [row, setRow] = React.useState(0);
-  const [column, setColumn] = React.useState(0);
+  const table = node.relations.tableContext;
 
-  const rows = node.relations.tableContext?.rows;
-  const rowCount = node.relations.tableContext?.rowCount;
-  const colCount = node.relations.tableContext?.colCount;
-
-  if (!rows) {
+  if (!table || !table.rows) {
     return (
       <BlockTemplate role={node.role} header={node.hasCustomAccessibleName ? `${node.accessibleName}` : ""}>
         {render(node.children)}
@@ -101,63 +90,37 @@ export default observer(function Table({ node }: ComponentProps) {
     );
   }
 
-  const cell = rows[row] && rows[row][column];
-
-  const nextRow = findNextIndex(rows, row, 1, row => row[column] && row[column] !== cell);
-  const prevRow = findNextIndex(rows, row, -1, row => row[column] && row[column] !== cell);
-
-  const nextColumn = findNextIndex(rows[row], column, 1, x => x && x !== cell);
-  const prevColumn = findNextIndex(rows[row], column, -1, x => x && x !== cell);
-
   return (
     <BlockTemplate
       role={node.role}
-      header={`${
-        node.hasCustomAccessibleName ? `${node.accessibleName} - ` : ""
-      } ${rowCount} row(s), ${colCount} column(s)`}
+      header={`${node.hasCustomAccessibleName ? `${node.accessibleName} - ` : ""} ${table.rowCount} row(s), ${
+        table.colCount
+      } column(s)`}
     >
       <Navigation>
         <ColNav>
-          <Button
-            disabled={prevColumn == null}
-            style={{ padding: "2px 15px" }}
-            onClick={() => prevColumn != null && setColumn(prevColumn)}
-          >
+          <Button style={{ padding: "2px 15px" }} onClick={() => table.showPreviousColumn()}>
             ⬅
           </Button>
-          <span> {column + 1} </span>
-          <Button
-            disabled={nextColumn == null}
-            style={{ padding: "2px 15px" }}
-            onClick={() => nextColumn != null && setColumn(nextColumn)}
-          >
+          <span> {table.visibleColumn + 1} </span>
+          <Button style={{ padding: "2px 15px" }} onClick={() => table.showNextColumn()}>
             ➡
           </Button>
           <Headers>
-            <Role>{rows[row][column].role ?? "<unknown>"}</Role>
-            {rows[row][column].attributes.headers?.map(x => x.accessibleName).join(", ") || undefined}
+            <Role>{table.visibleCell.role ?? "<unknown>"}</Role>
+            {table.visibleCell.attributes.headers?.map(x => x.accessibleName).join(", ") || undefined}
           </Headers>
         </ColNav>
         <RowNav>
-          <Button
-            disabled={nextRow == null}
-            style={{ padding: "15px 2px " }}
-            onClick={() => nextRow != null && setRow(nextRow)}
-          >
+          <Button style={{ padding: "15px 2px " }} onClick={() => table.showNextRow()}>
             ⬅
           </Button>
-          <span> {row + 1} </span>
-          <Button
-            disabled={prevRow == null}
-            style={{ padding: "15px 2px " }}
-            onClick={() => prevRow != null && setRow(prevRow)}
-          >
+          <span> {table.visibleRow + 1} </span>
+          <Button style={{ padding: "15px 2px " }} onClick={() => table.showPreviousRow()}>
             ➡
           </Button>
         </RowNav>
-        <div style={{ gridArea: "content", border: "1px solid #555" }}>
-          <div style={{ padding: 10 }}>{render(rows[row][column].children)}</div>
-        </div>
+        <TableCell style={{ gridArea: "content", border: "1px solid #555", padding: 10 }} node={table.visibleCell} />
       </Navigation>
     </BlockTemplate>
   );

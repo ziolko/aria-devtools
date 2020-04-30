@@ -74,6 +74,7 @@ const renderers: RendererMap = {
   gridcell: Block,
   columnheader: Block,
   rowheader: Block,
+  menuitem: Block,
   option: Option
 };
 
@@ -97,7 +98,7 @@ export default function render(element: AOMElement | AOMElement[]): any {
 
   const node = element as NodeElement;
 
-  if (node.isHidden) {
+  if (node.isHidden && !node.containsFocus) {
     return null;
   }
 

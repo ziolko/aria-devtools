@@ -1,4 +1,4 @@
-import { computed, observable } from "mobx";
+import { action, computed, observable } from "mobx";
 import { findAncestor, findDescendants, hasEmptyRoleMapping, isRootLandmark } from "./utils";
 
 export type HtmlID = string;
@@ -35,6 +35,73 @@ class Table {
 
 export class HtmlTableContext {
   root: NodeElement;
+
+  @observable visibleRow: number = 0;
+  @observable visibleColumn: number = 0;
+
+  @computed get visibleCell(): NodeElement {
+    return this.rows[this.visibleRow] && this.rows[this.visibleRow][this.visibleColumn];
+  }
+
+  @computed set visibleCell(node: NodeElement) {
+    const cell = this.cells.get(node);
+    if (cell) {
+      this.visibleRow = cell.rowIndex;
+      this.visibleColumn = cell.colIndex;
+    }
+  }
+
+  private getNextRow(step: 1 | -1) {
+    return this.findNextIndex(
+      this.rows,
+      this.visibleRow,
+      step,
+      row => row[this.visibleColumn] && row[this.visibleColumn] !== this.visibleCell
+    );
+  }
+
+  private getNextColumn(step: 1 | -1) {
+    return this.findNextIndex(this.rows[this.visibleRow], this.visibleColumn, step, x => x && x !== this.visibleCell);
+  }
+
+  @action showNextRow() {
+    const row = this.getNextRow(1);
+
+    if (row != null) {
+      this.visibleRow = row;
+    }
+  }
+
+  @action showPreviousRow() {
+    const row = this.getNextRow(-1);
+
+    if (row != null) {
+      this.visibleRow = row;
+    }
+  }
+
+  @action showNextColumn() {
+    const column = this.getNextColumn(1);
+
+    if (column != null) {
+      this.visibleColumn = column;
+    }
+  }
+
+  @action showPreviousColumn() {
+    const column = this.getNextColumn(-1);
+
+    if (column != null) {
+      this.visibleColumn = column;
+    }
+  }
+
+  private findNextIndex<T>(list: T[], start: number, step: number, condition: (arg: T) => boolean) {
+    for (let i = start; i >= 0 && i < list.length; i += step) {
+      if (condition(list[i])) return i;
+    }
+    return null;
+  }
 
   private getNodes(root: NodeElement, ...allowedTags: string[]): NodeElement[] {
     return root.children.filter(child => {
@@ -769,6 +836,7 @@ export class NodeElement {
 
   @observable isHidden: boolean;
   @observable isFocused: boolean;
+  @observable containsFocus?: boolean;
   @observable isInline: boolean;
   @observable htmlParent: NodeElement | null = null;
   @observable htmlChildren: NonNullable<AOMElement>[] = [];
