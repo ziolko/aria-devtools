@@ -3,12 +3,7 @@ import React from "react";
 import { borderRadius, useFocusable } from "./utils";
 import { renderContext, ComponentProps } from "./utils";
 import { observer } from "mobx-react";
-import {
-  AOMElement,
-  AriaRole,
-  NodeElement,
-  TextElement
-} from "../../AOM/types";
+import { AOMElement, AriaRole, NodeElement, TextElement } from "../../AOM/types";
 
 const BlockWrapper = styled.div<{
   role: string;
@@ -41,6 +36,7 @@ const BlockRole = styled.div<{ hasHeader: boolean; color: string }>`
   border-top-right-radius: ${props => (props.hasHeader ? "0px" : borderRadius)};
   border: 1px solid transparent;
   opacity: 0.8;
+  word-break: keep-all;
 
   ${BlockWrapper}:hover > ${BlockMeta} > & {
     border-color: white;
@@ -88,6 +84,8 @@ const BlockHeader = styled.div<{ color: string }>`
 
 const BlockContent = styled.div`
   margin-left: 32px;
+  word-break: break-word;
+
   ::before,
   ::after {
     content: "";
@@ -101,11 +99,12 @@ export interface BlockTemplateProps {
   header?: string;
   children: any;
   style?: object;
+  className?: string;
   color?: string;
 }
 
 export const BlockTemplate = React.forwardRef(function BlockTemplate(
-  { role, header, children, style, color }: BlockTemplateProps,
+  { role, header, children, style, className, color }: BlockTemplateProps,
   ref: React.Ref<HTMLDivElement>
 ) {
   color = color ?? "#333377";
@@ -113,17 +112,8 @@ export const BlockTemplate = React.forwardRef(function BlockTemplate(
   const [isHovered, setHovered] = React.useState(false);
 
   return (
-    <BlockWrapper
-      ref={ref}
-      style={style}
-      color={color}
-      role={role ?? ""}
-      isHovered={isHovered}
-    >
-      <BlockMeta
-        onMouseOver={() => setHovered(true)}
-        onMouseOut={() => setHovered(false)}
-      >
+    <BlockWrapper ref={ref} className={className} style={style} color={color} role={role ?? ""} isHovered={isHovered}>
+      <BlockMeta onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
         <BlockRole hasHeader={!!header} color={color}>
           <BlockRoleContent>{role}</BlockRoleContent>
         </BlockRole>
@@ -140,9 +130,9 @@ export default observer(function({ node }: ComponentProps) {
 
   const label = node.hasCustomAccessibleName ? node.accessibleName : undefined;
 
-  // if (!node.hasContent) {
-  //   return null;
-  // }
+  if (!node.hasContent) {
+    return null;
+  }
 
   return (
     <BlockTemplate ref={ref} style={style} role={node.role} header={label}>

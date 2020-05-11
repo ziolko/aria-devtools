@@ -1,5 +1,6 @@
 import { action, computed, observable } from "mobx";
 import { findAncestor, findDescendants, hasEmptyRoleMapping, isRootLandmark } from "./utils";
+import html = Mocha.reporters.html;
 
 export type HtmlID = string;
 export type AomKey = string;
@@ -36,18 +37,44 @@ class Table {
 export class HtmlTableContext {
   root: NodeElement;
 
-  @observable visibleRow: number = 0;
-  @observable visibleColumn: number = 0;
+  @observable _visibleRow: number = 0;
+  @observable _visibleColumn: number = 0;
+
+  @computed get visibleRow(): number {
+    const maxRow = this.rows.length - 1;
+    if (this._visibleRow < 0) return 0;
+    if (this._visibleRow >= maxRow) return maxRow;
+
+    return this._visibleRow;
+  }
+
+  set visibleRow(value: number) {
+    this._visibleRow = value;
+  }
+
+  @computed get visibleColumn(): number {
+    const maxCol = this.rows[this.visibleRow].length - 1;
+    if (this._visibleColumn < 0) return 0;
+    if (this._visibleColumn >= maxCol) return maxCol;
+
+    return this._visibleColumn;
+  }
+
+  set visibleColumn(value: number) {
+    this._visibleColumn = value;
+  }
 
   @computed get visibleCell(): NodeElement {
     return this.rows[this.visibleRow] && this.rows[this.visibleRow][this.visibleColumn];
   }
 
-  @computed set visibleCell(node: NodeElement) {
-    const cell = this.cells.get(node);
-    if (cell) {
-      this.visibleRow = cell.rowIndex;
-      this.visibleColumn = cell.colIndex;
+  @action showCellWithNode(element: NodeElement) {
+    for (let node: NodeElement | null = element; node != null; node = node.ariaParent) {
+      const cell = this.cells.get(node);
+      if (cell) {
+        this.visibleRow = cell.rowIndex;
+        this.visibleColumn = cell.colIndex;
+      }
     }
   }
 
@@ -297,6 +324,7 @@ export class AomNodeRelations {
   @observable formContext: Context | null = null;
   @observable fieldsetContext: Context | null = null;
   @observable labelContext: Context | null = null;
+  @observable ariaLiveContext: Context | null = null;
   @observable tableContext: HtmlTableContext | null = null;
 
   @computed get labelOf(): NodeElement[] {
@@ -398,6 +426,10 @@ export class TextElement {
     return this.htmlParent;
   }
 
+  @computed get accessibleName() {
+    return this.text;
+  }
+
   constructor(props: { key: AomKey; text: string }) {
     this.key = props.key;
     this.text = props.text;
@@ -435,15 +467,18 @@ export class RawNodeAttributes {
   @observable "aria-autocomplete"?: "inline" | "list" | "both" | "none" = undefined;
   @observable "aria-controls"?: HtmlID[] = undefined;
   @observable "aria-disabled"?: string = undefined;
+  @observable "aria-modal"?: string = undefined;
   @observable "aria-describedby"?: HtmlID = undefined;
-  @observable "aria-haspopup"?: boolean = undefined;
+  @observable "aria-haspopup"?: string = undefined;
+  @observable "aria-expanded"?: string = undefined;
   @observable "aria-label"?: string = undefined;
   @observable "aria-invalid"?: "false" | "true" = undefined;
   @observable "aria-labelledby"?: HtmlID = undefined;
   @observable "aria-level"?: string = undefined;
-  @observable "aria-live"?: "off" | "polite" | "assertive" | "rude" = undefined;
+  @observable "aria-live"?: "off" | "polite" | "assertive" = undefined;
   @observable "aria-multiline"?: boolean = undefined;
-  @observable "aria-multiselectable"?: boolean = undefined;
+  @observable "aria-multiselectable"?: string = undefined;
+  @observable "aria-selected"?: string = undefined;
   @observable "aria-orientation"?: "horizontal" | "vertical" = undefined;
   @observable "aria-owns"?: HtmlID = undefined;
   @observable "aria-posinset"?: string = undefined;
@@ -474,7 +509,11 @@ function asNumber(value: string | number | null | undefined): number | undefined
 }
 
 function asBoolean(value: string | boolean | null | undefined) {
-  return value === "" || value === "true" || value === true;
+  const isTrue = value === "" || value === "true" || value === true;
+  const isFalse = value === "false";
+  if (isTrue) return true;
+  if (isFalse) return false;
+  return undefined;
 }
 
 export class RawNodeProperties {
@@ -509,7 +548,7 @@ export class Aria {
         const data = this.node.relations.tableContext?.cells.get(this.node);
         if (data) {
           return {
-            rawRole,
+            role: rawRole,
             headers: [...data.rowHeaders, ...data.colHeaders],
             colIndex: data.colIndex + 1,
             rowIndex: data.rowIndex + 1,
@@ -517,6 +556,10 @@ export class Aria {
             rowSpan: data.rowSpan
           };
         }
+      }
+
+      if (rawRole === "alert") {
+        return { role: rawRole, ariaLive: "assertive", ariaAtomic: true };
       }
 
       return { role: rawRole };
@@ -544,7 +587,7 @@ export class Aria {
       };
     }
 
-    if (htmlTag === "a") {
+    if (htmlTag === "a" || htmlTag === "area") {
       return { role: this.rawAttributes.href?.trim() ? "link" : null };
     }
 
@@ -641,6 +684,10 @@ export class Aria {
       return { role: "article" };
     }
 
+    if (htmlTag === "figure") {
+      return { role: "figure" };
+    }
+
     if (htmlTag === "hr") {
       return { role: "separator" };
     }
@@ -665,7 +712,7 @@ export class Aria {
       if (isMultiple || (size && size > 1)) {
         return { role: "listbox" };
       } else {
-        return { role: "combobox" };
+        return { role: "combobox", ariaExpanded: false };
       }
     }
 
@@ -675,6 +722,10 @@ export class Aria {
 
     if (htmlTag === "option") {
       return { role: "option" };
+    }
+
+    if (htmlTag === "svg") {
+      return { role: "graphics-document" };
     }
 
     if (htmlTag === "table") {
@@ -755,6 +806,15 @@ export class Aria {
   @computed get ariaMultiline() {
     return asBoolean(this.rawAttributes["aria-multiline"] ?? this.mappedAttributes?.ariaMultiline);
   }
+  @computed get ariaMultiselectable() {
+    return asBoolean(this.rawAttributes["aria-multiselectable"]);
+  }
+  @computed get ariaSelected() {
+    return asBoolean(this.rawAttributes["aria-selected"]);
+  }
+  @computed get ariaModal() {
+    return asBoolean(this.rawAttributes["aria-modal"]);
+  }
   @computed get ariaLevel(): number | undefined {
     return asNumber(this.rawAttributes["aria-level"]?.trim() ?? this.mappedAttributes?.ariaLevel);
   }
@@ -789,6 +849,14 @@ export class Aria {
 
   @computed get ariaRowSpan(): number | undefined {
     return asNumber(this.mappedAttributes?.rowSpan);
+  }
+
+  @computed get ariaLive() {
+    return this.rawAttributes["aria-live"]?.trim() ?? this.mappedAttributes?.ariaLive ?? "off";
+  }
+
+  @computed get ariaExpanded(): boolean | undefined {
+    return asBoolean(this.rawAttributes["aria-expanded"]?.trim() ?? this.mappedAttributes?.ariaExpanded);
   }
 
   @computed get htmlFor() {
@@ -837,6 +905,7 @@ export class NodeElement {
   @observable isHidden: boolean;
   @observable isFocused: boolean;
   @observable containsFocus?: boolean;
+  @observable isActiveAlarm: boolean = false;
   @observable isInline: boolean;
   @observable htmlParent: NodeElement | null = null;
   @observable htmlChildren: NonNullable<AOMElement>[] = [];

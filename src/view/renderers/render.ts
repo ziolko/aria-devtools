@@ -6,7 +6,6 @@ import Heading from "./Heading";
 import Link from "./Link";
 import Button from "./Button";
 import TextBox from "./TextBox";
-import Figure from "./Figure";
 import Paragraph from "./Paragraph";
 import Unsupported from "./Unsupported";
 import List from "./List";
@@ -22,22 +21,26 @@ import { ComponentProps } from "./utils";
 import Radio from "./Radio";
 import Checkbox from "./Checkbox";
 import Combobox from "./Combobox";
-import Cell from "./Cell";
 import Table from "./Table";
+import Dialog from "./Dialog";
+import AriaLive from "./AriaLive";
 
 type RendererMap = { [key in string]: React.FunctionComponent<ComponentProps> };
 
 const renderers: RendererMap = {
   presentation: Null,
   none: Null,
+  alert: Block,
   document: Document,
   application: Block,
-  dialog: Block,
+  dialog: Dialog,
+  alertdialog: Dialog,
   main: Block,
   banner: Block,
   region: Block,
   definition: Block,
   navigation: Block,
+  toolbar: Block,
   contentinfo: Block,
   complementary: Block,
   group: Block,
@@ -51,9 +54,11 @@ const renderers: RendererMap = {
   link: Link,
   image: Image,
   img: Image,
+  "graphics-document": Image,
   button: Button,
   textbox: TextBox,
-  figure: Figure,
+  figure: Block,
+  feed: Block,
   paragraph: Paragraph,
   default: Unsupported,
   list: List,
@@ -62,7 +67,8 @@ const renderers: RendererMap = {
   combobox: Combobox,
   search: Block,
   listbox: Block,
-  alert: Block,
+  status: Block,
+  tablist: Block,
   menubar: Block,
   menu: Block,
   note: Block,
@@ -75,7 +81,9 @@ const renderers: RendererMap = {
   columnheader: Block,
   rowheader: Block,
   menuitem: Block,
-  option: Option
+  option: Option,
+  tab: Block,
+  tabpanel: Block
 };
 
 const htmlTagRenderers: RendererMap = {
@@ -116,8 +124,21 @@ export default function render(element: AOMElement | AOMElement[]): any {
     renderer = Unsupported;
   }
 
-  return React.createElement(renderer, {
+  const el = React.createElement(renderer, {
     node,
     key: node.key
   });
+
+  if (node.attributes.ariaLive === "off") {
+    return el;
+  }
+
+  return React.createElement(
+    AriaLive,
+    {
+      node,
+      key: node.key
+    },
+    el
+  );
 }

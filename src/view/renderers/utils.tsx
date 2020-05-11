@@ -7,10 +7,7 @@ type RenderContext = (element: AOMElement | AOMElement[]) => any;
 export type ComponentProps = { node: NodeElement };
 export const renderContext = React.createContext<RenderContext>(() => null);
 
-export function isDescendantOf(
-  descendant: NonNullable<NodeElement>,
-  ascendant: NonNullable<NodeElement>
-) {
+export function isDescendantOf(descendant: NonNullable<NodeElement>, ascendant: NonNullable<NodeElement>) {
   let node: AOMElement = descendant;
   while (node != null) {
     if (node === ascendant) {
@@ -22,9 +19,7 @@ export function isDescendantOf(
   return false;
 }
 
-export function useFocusable(
-  node: NonNullable<NodeElement>
-): [React.Ref<any>, object] {
+export function useFocusable(node: NonNullable<NodeElement>): [React.Ref<any>, object] {
   const ref = React.useRef<Element>(null);
 
   const isFocused = node.isFocused;
@@ -52,3 +47,12 @@ export function useFocusable(
   return [ref, style];
 }
 
+export function getHeader(...els: (string | undefined)[]) {
+  const result = [];
+  for (const x of els) {
+    if (!!x) {
+      result.push(x);
+    }
+  }
+  return result.join(" ");
+}

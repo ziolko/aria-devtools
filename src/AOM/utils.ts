@@ -46,7 +46,10 @@ export function trimStart(el: AOMElement[]) {
     const textElement = el[i] as TextElement;
 
     if (isText && textElement.text.trimStart() !== "") {
-      result.push({ ...textElement, text: textElement.text.trimStart() });
+      const trimmedTextElement = new TextElement({ key: textElement.key, text: textElement.text.trimStart() });
+      trimmedTextElement.htmlParent = textElement.htmlParent;
+
+      result.push(trimmedTextElement);
       result.push(...el.slice(i + 1));
       return result;
     }
@@ -59,9 +62,7 @@ export function trimStart(el: AOMElement[]) {
   return null;
 }
 
-export const findDescendantInput = (
-  nodes: AOMElement[]
-): NodeElement | null => {
+export const findDescendantInput = (nodes: AOMElement[]): NodeElement | null => {
   for (const node of nodes) {
     if (node instanceof NodeElement) {
       if (node.htmlTag === "input") {
@@ -146,7 +147,7 @@ const tagsWithNullRoleMapping = [
 ];
 
 export function hasEmptyRoleMapping(htmlTag: string) {
-  return tagsWithNullRoleMapping.includes(htmlTag);
+  return htmlTag.includes("-") || tagsWithNullRoleMapping.includes(htmlTag);
 }
 
 const sectioningTags = [
@@ -171,10 +172,7 @@ export function isRootLandmark(node: NodeElement) {
   return true;
 }
 
-export function findAncestor(
-  node: NodeElement | null | undefined,
-  predicate: (node: NodeElement) => boolean
-) {
+export function findAncestor(node: NodeElement | null | undefined, predicate: (node: NodeElement) => boolean) {
   while ((node = node?.htmlParent) != null) {
     if (predicate(node)) {
       return node;
@@ -184,10 +182,7 @@ export function findAncestor(
   return null;
 }
 
-export function findDescendants(
-  node: NodeElement | null | undefined,
-  predicate: (node: NodeElement) => boolean
-) {
+export function findDescendants(node: NodeElement | null | undefined, predicate: (node: NodeElement) => boolean) {
   const result: NodeElement[] = [];
 
   node?.htmlChildren.forEach(child => {

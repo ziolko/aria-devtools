@@ -6,7 +6,7 @@ import { observer } from "mobx-react";
 
 const color = "#aaa";
 
-const ButtonWrapper = styled.span<{ isHovered: boolean, isDisabled: boolean }>`
+const ButtonWrapper = styled.span<{ isHovered: boolean; isDisabled: boolean }>`
   --block-display: inline-block;
   margin: 10px 0;
   border-radius: ${borderRadius};
@@ -50,12 +50,16 @@ export default observer(function Button({ node }: ComponentProps) {
   const [isHovered, setHovered] = React.useState(false);
   const [ref, style] = useFocusable(node);
 
+  const isExpansible = node.attributes.ariaExpanded != null;
   return (
-    <ButtonWrapper ref={ref} style={style} isHovered={isHovered} isDisabled={node.attributes.disabled}>
+    <ButtonWrapper ref={ref} style={style} isHovered={isHovered} isDisabled={!!node.attributes.disabled}>
       <Role onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
         🖱️
       </Role>
-      <ButtonContent isHovered={isHovered}>{node.accessibleName}&nbsp;</ButtonContent>
+      <ButtonContent isHovered={isHovered}>
+        {node.accessibleName}&nbsp;
+        {isExpansible && (node.attributes.ariaExpanded ? "- expanded" : "- collapsed")}
+      </ButtonContent>
     </ButtonWrapper>
   );
 });

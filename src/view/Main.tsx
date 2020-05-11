@@ -1,4 +1,4 @@
-import React from "react";
+import React, { SyntheticEvent } from "react";
 import styled, { createGlobalStyle } from "styled-components";
 import { AOMElement } from "../AOM/types";
 import Component from "./renderers";
@@ -6,15 +6,6 @@ import font from "./font";
 
 // @ts-ignore
 import root from "react-shadow";
-
-const DisableMainScrollbar = createGlobalStyle`
-  html, body {
-    ::-webkit-scrollbar {
-      width: 0 !important;   
-      background: transparent !important;
-    }
-  }
-`;
 
 const bottomBarHeight = "30px";
 
@@ -74,14 +65,20 @@ const ActionsBar = styled.div`
   border-left: 1px solid #555;
 `;
 
+const Alert = styled.div`
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: red;
+`
+
 export default (props: MainProps) => {
   return (
-    <>
-      <DisableMainScrollbar />
-      <Layout onMouseDown={(e: any) => e.preventDefault()}>
-        <ComponentWithScrollBar element={props.root} />
-        {/*<ActionsBar>Test</ActionsBar>*/}
-      </Layout>
-    </>
+    <Layout>
+      <ComponentWithScrollBar element={props.root} />
+      {/*<ActionsBar>Test</ActionsBar>*/}
+    </Layout>
   );
 };

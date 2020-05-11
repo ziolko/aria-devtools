@@ -24,14 +24,13 @@ class RelationsForId {
 export default class Store {
   private keyToAomElement = new Map<AomKey, AOMElement>();
   private idToRelations = new Map<HtmlID, RelationsForId>();
+
   private focusedNode: NodeElement | null = null;
+  private activeDescendantNode: NodeElement | null = null;
+  private activeAriaLiveNodes: NodeElement[] = [];
 
   @action focus(element: AOMElement) {
-    if (element === this.focusedNode) {
-      return;
-    }
-
-    if (this.focusedNode) {
+    if (this.focusedNode && this.focusedNode !== element) {
       this.focusedNode.isFocused = false;
       for (let node: NodeElement | null = this.focusedNode; node != null; node = node.ariaParent) {
         node.containsFocus = false;
@@ -39,16 +38,51 @@ export default class Store {
       this.focusedNode = null;
     }
 
-    if (element instanceof NodeElement) {
+    if (this.focusedNode !== element && element instanceof NodeElement) {
       element.isFocused = true;
       this.focusedNode = element;
 
       for (let node: NodeElement | null = element; node != null; node = node.ariaParent) {
         node.containsFocus = true;
-        if (node.relations.tableContext) {
-          node.relations.tableContext.visibleCell = node;
-        }
       }
+
+      element.relations.tableContext?.showCellWithNode(element);
+    }
+
+    const descendants = this.focusedNode && this.focusedNode.relations.ariaActiveDescendants;
+    const activeDescendant = descendants?.length && descendants[0];
+
+    if (activeDescendant && activeDescendant !== this.activeDescendantNode) {
+      activeDescendant.relations.tableContext?.showCellWithNode(activeDescendant);
+      this.activeDescendantNode = activeDescendant;
+    }
+  }
+
+  @action addActiveAriaLiveNode(node: NodeElement) {
+    this.clearActiveAriaLiveNode(node);
+
+    if (node.attributes.ariaLive === "assertive") {
+      this.activeAriaLiveNodes.forEach(x => (x.isActiveAlarm = false));
+      this.activeAriaLiveNodes.splice(0, this.activeAriaLiveNodes.length, node);
+      node.isActiveAlarm = true;
+    } else if (node.attributes.ariaLive === "polite") {
+      if (this.activeAriaLiveNodes.push(node) === 1) {
+        node.isActiveAlarm = true;
+      }
+    }
+  }
+
+  @action clearActiveAriaLiveNode(node: NodeElement) {
+    node.isActiveAlarm = false;
+    const index = this.activeAriaLiveNodes.indexOf(node);
+
+    if (index === -1) {
+      return;
+    }
+
+    this.activeAriaLiveNodes.splice(index, 1);
+    if (this.activeAriaLiveNodes.length > 0) {
+      this.activeAriaLiveNodes[0].isActiveAlarm = true;
     }
   }
 
@@ -69,6 +103,7 @@ export default class Store {
       this.setContext(element, "formContext", "form", "input");
       this.setContext(element, "labelContext", "label", "input", "textarea");
       this.setContext(element, "fieldsetContext", "fieldset", "legend");
+      this.setAriaLiveContext(element);
       this.setTableContext(element);
 
       element.htmlChildren.forEach(item => item && this.register(item));
@@ -76,15 +111,23 @@ export default class Store {
       if (element.isFocused) {
         this.focus(element);
       }
+
+      if (element.relations.ariaLiveContext?.root) {
+        this.addActiveAriaLiveNode(element.relations.ariaLiveContext.root);
+      }
     }
 
     return element;
   }
 
-  update(update: NonNullable<AOMElement>) {
+  update(update: NonNullable<AOMElement>, updatedNodes = new Set<AOMElement>()) {
     const el = this.getElement(update.key);
 
     if (!el) {
+      return;
+    }
+
+    if (updatedNodes.has(el)) {
       return;
     }
 
@@ -100,6 +143,17 @@ export default class Store {
 
     this.updateReferenceRelations(el, el.attributes, update.attributes);
 
+    const setActiveAriaLiveNode = () => {
+      const liveRoot = el.relations.ariaLiveContext?.root;
+      if (liveRoot && this.activeAriaLiveNodes[0] !== liveRoot) {
+        this.addActiveAriaLiveNode(liveRoot);
+      }
+    };
+
+    if (el.isHidden !== update.isHidden) {
+      setActiveAriaLiveNode();
+    }
+
     reconcileFields(el, update, ["isHidden", "isInline"]);
 
     reconcileFields(el.getRawAttributes(), update.getRawAttributes());
@@ -113,24 +167,33 @@ export default class Store {
       if (!sourceMap.has(node.key)) {
         node.htmlParent = null;
         this.unregister(node);
+        setActiveAriaLiveNode();
       }
     });
 
     // Register new children in store
     sourceMap.forEach(node => {
-      if (targetMap.has(node.key)) {
+      const target = targetMap.get(node.key);
+      if (target) {
+        if (target instanceof TextElement && node instanceof TextElement && target.text !== node.text) {
+          setActiveAriaLiveNode();
+        }
+
         this.update(node);
       } else {
         node.htmlParent = el;
         this.register(node);
+        setActiveAriaLiveNode();
       }
     });
 
     reconcileChildListOrder(el.htmlChildren, update.htmlChildren, this);
 
-    if (!el.isFocused && update.isFocused) {
+    if (update.isFocused) {
       this.focus(el);
     }
+
+    updatedNodes.add(el);
   }
 
   unregister(element: AOMElement) {
@@ -139,10 +202,13 @@ export default class Store {
     }
 
     if (element instanceof NodeElement) {
+      this.clearActiveAriaLiveNode(element);
       this.updateReferenceRelations(element, element.attributes, null);
       element.relations.formContext = null;
       element.relations.labelContext = null;
       element.relations.fieldsetContext = null;
+      element.relations.ariaLiveContext = null;
+      element.relations.tableContext = null;
 
       element.htmlChildren.forEach(item => item && this.unregister(item));
 
@@ -274,6 +340,15 @@ export default class Store {
       node.relations.tableContext = new AriaTableContext(node);
     } else if (node.htmlParent) {
       node.relations.tableContext = node.htmlParent.relations.tableContext;
+    }
+  }
+
+  private setAriaLiveContext(node: NodeElement) {
+    if (node.attributes.ariaLive !== "off") {
+      console.log("heree", node);
+      node.relations.ariaLiveContext = new Context(node);
+    } else if (node.htmlParent) {
+      node.relations.ariaLiveContext = node.htmlParent.relations.ariaLiveContext;
     }
   }
 }

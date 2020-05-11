@@ -30,10 +30,7 @@ const ValidityIcon = styled.span<{ invalid: boolean }>`
   display: inline-block;
   transform-origin: center center;
   transition: transform 0.3s ease-in;
-  transform: ${props =>
-    props.invalid
-      ? `rotate(180deg) translateY(-1px)`
-      : `rotate(0) translate(0)`};
+  transform: ${props => (props.invalid ? `rotate(180deg) translateY(-1px)` : `rotate(0) translate(0)`)};
 
   ::before {
     content: "👍";
@@ -44,17 +41,16 @@ export default observer(function TextBox({ node }: ComponentProps) {
   const [ref, style] = useFocusable(node);
 
   return (
-    <HorizontalBlockTemplate header={node.role} ref={ref}>
-      <HeaderPart>{node.accessibleName}</HeaderPart>{" "}
+    <HorizontalBlockTemplate header={node.role ?? `<${node.htmlTag}>`} ref={ref}>
+      {node.hasCustomAccessibleName && (
+        <>
+          <HeaderPart>{node.accessibleName}</HeaderPart>{" "}
+        </>
+      )}
       <HeaderPart>
-        {node.attributes.ariaRequired && "⭐"}{" "}
-        <ValidityIcon invalid={node.attributes.ariaInvalid} />
+        {node.attributes.ariaRequired && "⭐"} <ValidityIcon invalid={node.attributes.ariaInvalid} />
       </HeaderPart>
-      <TextBoxContent
-        multiline={node.attributes.ariaMultiline}
-        invalid={node.attributes.ariaInvalid}
-        style={style}
-      >
+      <TextBoxContent multiline={node.attributes.ariaMultiline} invalid={node.attributes.ariaInvalid} style={style}>
         {node.attributes.htmlValue}&nbsp;
       </TextBoxContent>
     </HorizontalBlockTemplate>

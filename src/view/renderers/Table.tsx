@@ -3,6 +3,7 @@ import { BlockTemplate } from "./Block";
 import { renderContext, ComponentProps, borderRadius, useFocusable } from "./utils";
 import { observer } from "mobx-react";
 import styled, { css } from "styled-components";
+import { NodeElement } from "../../AOM/types";
 
 const color = "#333377";
 
@@ -66,7 +67,13 @@ const Role = styled.div`
   }
 `;
 
-const TableCell = observer(function TableCell({ node, style = {}, className }: ComponentProps) {
+interface TableCellProps {
+  node: NodeElement;
+  style?: object;
+  className?: string;
+}
+
+const TableCell = observer(function TableCell({ node, style = {}, className }: TableCellProps) {
   const render = React.useContext(renderContext);
   const [ref, focusStyle] = useFocusable(node);
 
@@ -79,7 +86,6 @@ const TableCell = observer(function TableCell({ node, style = {}, className }: C
 
 export default observer(function Table({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
-
   const table = node.relations.tableContext;
 
   if (!table || !table.rows) {
@@ -99,11 +105,11 @@ export default observer(function Table({ node }: ComponentProps) {
     >
       <Navigation>
         <ColNav>
-          <Button style={{ padding: "2px 15px" }} onClick={() => table.showPreviousColumn()}>
+          <Button style={{ padding: "2px 15px" }} onClickCapture={() => table.showPreviousColumn()}>
             ⬅
           </Button>
           <span> {table.visibleColumn + 1} </span>
-          <Button style={{ padding: "2px 15px" }} onClick={() => table.showNextColumn()}>
+          <Button style={{ padding: "2px 15px" }} onClickCapture={() => table.showNextColumn()}>
             ➡
           </Button>
           <Headers>
@@ -112,11 +118,11 @@ export default observer(function Table({ node }: ComponentProps) {
           </Headers>
         </ColNav>
         <RowNav>
-          <Button style={{ padding: "15px 2px " }} onClick={() => table.showNextRow()}>
+          <Button style={{ padding: "15px 2px " }} onClickCapture={() => table.showNextRow()}>
             ⬅
           </Button>
           <span> {table.visibleRow + 1} </span>
-          <Button style={{ padding: "15px 2px " }} onClick={() => table.showPreviousRow()}>
+          <Button style={{ padding: "15px 2px " }} onClickCapture={() => table.showPreviousRow()}>
             ➡
           </Button>
         </RowNav>

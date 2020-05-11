@@ -1,8 +1,8 @@
 import Store from "./index";
 import traverse from "../AOM/traverse";
 import { getNodeKey } from "../AOM/utils";
-import { AOMElement, NodeElement } from "../AOM/types";
-import { action, runInAction } from "mobx";
+import { AOMElement } from "../AOM/types";
+import { runInAction } from "mobx";
 import { IdleScheduler } from "./utils";
 
 export default class Observer {
@@ -47,6 +47,7 @@ export default class Observer {
   private onInput = (event: any) => {
     runInAction("input", () => {
       this.updateNode(event.target);
+      this.batchUpdate();
     });
   };
 
@@ -57,6 +58,8 @@ export default class Observer {
           this.updateNode(mutation.target);
         }
       }
+
+      this.batchUpdate();
     });
   };
 
@@ -89,16 +92,29 @@ export default class Observer {
       const focusedEl = this.store.getElement(focusedKey);
 
       this.store.focus(focusedEl);
+      this.batchUpdate();
     });
   };
 
-  private updateNode = (node: Node) => {
-    const newAOM = traverse(node);
+  private nodesToUpdate: Set<Node> = new Set<Node>();
 
-    if (newAOM) {
-      this.store.update(newAOM);
-    }
+  private updateNode = (node: Node) => {
+    this.nodesToUpdate.add(node);
   };
+
+  private batchUpdate() {
+    const traversedNodes = new Map<Node, AOMElement>();
+    const updatedNodes = new Set<AOMElement>();
+
+    this.nodesToUpdate.forEach(node => {
+      const aom = traverse(node, traversedNodes);
+      if (aom) {
+        this.store.update(aom, updatedNodes);
+      }
+    });
+
+    this.nodesToUpdate.clear();
+  }
 
   disconnect() {
     this.observer.disconnect();

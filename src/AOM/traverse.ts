@@ -1,9 +1,14 @@
 import { AOMElement, NodeElement, TextElement } from "./types";
 import { getNodeKey, isFocused, isHidden, isInline } from "./utils";
+import { read } from "@popperjs/core";
 
 const ignoredHtmlElements = ["script", "noscript", "style"];
 
-export default function traverse(htmlNode: Node): AOMElement {
+export default function traverse(htmlNode: Node, traversedNodes = new Map<Node, AOMElement>()): AOMElement {
+  if (traversedNodes.has(htmlNode)) {
+    return traversedNodes.get(htmlNode);
+  }
+
   if (htmlNode.nodeType === Node.TEXT_NODE) {
     const text = htmlNode.textContent;
     return text ? new TextElement({ key: getNodeKey(htmlNode), text }) : null;
@@ -43,12 +48,13 @@ export default function traverse(htmlNode: Node): AOMElement {
   properties.invalid = node.validity ? !node.validity.valid : undefined;
 
   node.childNodes.forEach(subNOde => {
-    const child = traverse(subNOde);
+    const child = traverse(subNOde, traversedNodes);
     if (child) {
       child.htmlParent = result;
       result.htmlChildren.push(child);
     }
   });
 
+  traversedNodes.set(htmlNode, result);
   return result;
 }

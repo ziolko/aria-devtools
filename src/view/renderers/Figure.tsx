@@ -5,7 +5,7 @@ import { renderContext, ComponentProps } from "./utils";
 import { observer } from "mobx-react";
 
 const FigureWrapper = styled.div`
-  white-space: pre;
+  white-space: pre-wrap;
   border: 1px solid white;
   padding: 5px;
   width: auto;
