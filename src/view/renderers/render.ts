@@ -24,6 +24,7 @@ import Combobox from "./Combobox";
 import Table from "./Table";
 import Dialog from "./Dialog";
 import AriaLive from "./AriaLive";
+import MenuItem from "./MenuItem";
 
 type RendererMap = { [key in string]: React.FunctionComponent<ComponentProps> };
 
@@ -68,6 +69,7 @@ const renderers: RendererMap = {
   search: Block,
   listbox: Block,
   status: Block,
+  tooltip: Block,
   tablist: Block,
   menubar: Block,
   menu: Block,
@@ -80,7 +82,7 @@ const renderers: RendererMap = {
   gridcell: Block,
   columnheader: Block,
   rowheader: Block,
-  menuitem: Block,
+  menuitem: MenuItem,
   option: Option,
   tab: Block,
   tabpanel: Block
@@ -133,12 +135,9 @@ export default function render(element: AOMElement | AOMElement[]): any {
     return el;
   }
 
-  return React.createElement(
-    AriaLive,
-    {
-      node,
-      key: node.key
-    },
-    el
-  );
+  return React.createElement(AriaLive, {
+    node,
+    key: node.key,
+    children: el
+  });
 }

@@ -1,5 +1,6 @@
 import React from "react";
 import { AOMElement, NodeElement, TextElement } from "../../AOM/types";
+import scrollIntoView from "scroll-into-view";
 
 export const borderRadius = "5px";
 
@@ -40,7 +41,12 @@ export function useFocusable(node: NonNullable<NodeElement>): [React.Ref<any>, o
 
   React.useEffect(() => {
     if (isActiveDescendant || (isFocused && !hasActiveDescendant)) {
-      ref.current?.scrollIntoView({ block: "nearest" });
+      if (ref.current) {
+        scrollIntoView(ref.current, {
+          time: 200
+        });
+      }
+      // ref.current?.scrollIntoView({ block: "nearest" });
     }
   }, [isFocused, isActiveDescendant, hasActiveDescendant]);
 

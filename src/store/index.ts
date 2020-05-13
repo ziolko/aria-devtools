@@ -44,9 +44,8 @@ export default class Store {
 
       for (let node: NodeElement | null = element; node != null; node = node.ariaParent) {
         node.containsFocus = true;
+        node.relations.tableContext?.showCellWithNode(node);
       }
-
-      element.relations.tableContext?.showCellWithNode(element);
     }
 
     const descendants = this.focusedNode && this.focusedNode.relations.ariaActiveDescendants;
@@ -345,7 +344,6 @@ export default class Store {
 
   private setAriaLiveContext(node: NodeElement) {
     if (node.attributes.ariaLive !== "off") {
-      console.log("heree", node);
       node.relations.ariaLiveContext = new Context(node);
     } else if (node.htmlParent) {
       node.relations.ariaLiveContext = node.htmlParent.relations.ariaLiveContext;

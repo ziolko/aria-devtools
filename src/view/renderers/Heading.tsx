@@ -5,18 +5,16 @@ import { renderContext, ComponentProps } from "./utils";
 import { trimStart } from "../../AOM/utils";
 import { observer } from "mobx-react";
 
-const color = "#ab8900";
-
-const HeadingWrapper = styled.div<{ isHovered: boolean }>`
+const HeadingWrapper = styled.div<{ isHovered: boolean; color: string }>`
   margin: 15px 0 10px 0;
   border-radius: ${borderRadius};
-  ${props => props.isHovered && `background: ${color}`};
+  ${props => props.isHovered && `background: ${props.color}`};
 `;
 
-const Role = styled.div`
+const Role = styled.div<{ color: string }>`
   display: inline-block;
   text-transform: uppercase;
-  background: ${color};
+  background: ${props => props.color};
   border-radius: ${borderRadius};
   margin: 0 10px 0 0;
   padding: 0 5px;
@@ -34,21 +32,16 @@ export interface HorizontalBlockTemplateProps {
   header: string;
   children: any;
   style?: object;
+  color?: string;
 }
 
 export const HorizontalBlockTemplate = React.forwardRef(
-  (
-    { header, children, style }: HorizontalBlockTemplateProps,
-    ref: React.Ref<any>
-  ) => {
+  ({ header, children, style, color = "#ab8900" }: HorizontalBlockTemplateProps, ref: React.Ref<any>) => {
     const [isHovered, setHovered] = React.useState(false);
 
     return (
-      <HeadingWrapper isHovered={isHovered} style={style} ref={ref}>
-        <Role
-          onMouseOver={() => setHovered(true)}
-          onMouseOut={() => setHovered(false)}
-        >
+      <HeadingWrapper isHovered={isHovered} style={style} ref={ref} color={color}>
+        <Role color={color} onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
           {header}
         </Role>
         {children}
@@ -62,11 +55,7 @@ export default observer(function Heading({ node }: ComponentProps) {
   const [ref, style] = useFocusable(node);
 
   return (
-    <HorizontalBlockTemplate
-      header={`${node.role} ${node.attributes.ariaLevel ?? ""}`}
-      ref={ref}
-      style={style}
-    >
+    <HorizontalBlockTemplate header={`${node.role} ${node.attributes.ariaLevel ?? ""}`} ref={ref} style={style}>
       {render(trimStart(node.htmlChildren))}
     </HorizontalBlockTemplate>
   );

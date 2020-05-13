@@ -34,15 +34,15 @@
     "react-redux": "^7.2.0",
     "react-scripts": "3.3.1",
     "react-shadow": "^17.6.0",
+    "scroll-into-view": "^1.14.2",
     "source-map-support": "^0.5.16",
     "styled-components": "^5.0.0",
     "uuid": "^7.0.2"
   },
   "scripts": {
-    "start": "parcel src/index.js --hmr-hostname localhost --https",
-    "start:http": "parcel src/index.js --hmr-hostname localhost",
     "test": "parcel test/index.html --open --port 3000",
-    "build": "parcel build src/index.js"
+    "start": "parcel watch src/index.tsx --out-dir extension --out-file inject.js --hmr-hostname localhost --https",
+    "build": "parcel build src/index.tsx --out-dir extension --out-file inject.js"
   },
   "eslintConfig": {
     "extends": "react-app"

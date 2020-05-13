@@ -48,17 +48,17 @@ export default () => {
   const [isVisible, setVisible] = React.useState(true);
   const mainRef = React.useRef<HTMLDivElement>(null);
 
-  React.useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.shiftKey && (e.key === "A" || e.key === "a")) {
-        setVisible(!isVisible);
-      }
-    };
-
-    document.addEventListener("keydown", handler, true);
-
-    return () => document.removeEventListener("keydown", handler, true);
-  }, [isVisible, setVisible]);
+  // React.useEffect(() => {
+  //   const handler = (e: KeyboardEvent) => {
+  //     if (e.ctrlKey && e.shiftKey && (e.key === "A" || e.key === "a")) {
+  //       setVisible(!isVisible);
+  //     }
+  //   };
+  //
+  //   document.addEventListener("keydown", handler, true);
+  //
+  //   return () => document.removeEventListener("keydown", handler, true);
+  // }, [isVisible, setVisible]);
 
   React.useEffect(() => {
     // @ts-ignore

@@ -116,6 +116,7 @@ const tagsWithNullRoleMapping = [
   "math",
   "meta",
   "meter",
+  "nobr",
   "noscript",
   "object",
   "p",

@@ -41,6 +41,10 @@ export class HtmlTableContext {
   @observable _visibleColumn: number = 0;
 
   @computed get visibleRow(): number {
+    if (!this.rows.length) {
+      return -1;
+    }
+
     const maxRow = this.rows.length - 1;
     if (this._visibleRow < 0) return 0;
     if (this._visibleRow >= maxRow) return maxRow;
@@ -53,6 +57,10 @@ export class HtmlTableContext {
   }
 
   @computed get visibleColumn(): number {
+    if (!this.rows[this.visibleRow]?.length) {
+      return -1;
+    }
+
     const maxCol = this.rows[this.visibleRow].length - 1;
     if (this._visibleColumn < 0) return 0;
     if (this._visibleColumn >= maxCol) return maxCol;
@@ -64,7 +72,11 @@ export class HtmlTableContext {
     this._visibleColumn = value;
   }
 
-  @computed get visibleCell(): NodeElement {
+  @computed get visibleCell(): NodeElement | null {
+    if (!this.rows) {
+      return null;
+    }
+
     return this.rows[this.visibleRow] && this.rows[this.visibleRow][this.visibleColumn];
   }
 
@@ -480,7 +492,7 @@ export class RawNodeAttributes {
   @observable "aria-multiselectable"?: string = undefined;
   @observable "aria-selected"?: string = undefined;
   @observable "aria-orientation"?: "horizontal" | "vertical" = undefined;
-  @observable "aria-owns"?: HtmlID = undefined;
+  @observable "aria-owns"?: string = undefined;
   @observable "aria-posinset"?: string = undefined;
   @observable "aria-colindex"?: string = undefined;
   @observable "aria-rowindex"?: string = undefined;

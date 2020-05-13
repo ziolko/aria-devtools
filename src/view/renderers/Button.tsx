@@ -1,12 +1,13 @@
 import styled from "styled-components";
 import React from "react";
-import { borderRadius, useFocusable } from "./utils";
+import { borderRadius, renderContext, useFocusable } from "./utils";
 import { ComponentProps } from "./utils";
 import { observer } from "mobx-react";
+import { BlockTemplate } from "./Block";
 
 const color = "#aaa";
 
-const ButtonWrapper = styled.span<{ isHovered: boolean; isDisabled: boolean }>`
+const SimpleButtonWrapper = styled.span<{ isHovered: boolean; isDisabled: boolean }>`
   --block-display: inline-block;
   margin: 10px 0;
   border-radius: ${borderRadius};
@@ -16,7 +17,7 @@ const ButtonWrapper = styled.span<{ isHovered: boolean; isDisabled: boolean }>`
   ${props => props.isDisabled && `color: #777`};
 `;
 
-const Role = styled.span`
+const SimpleButtonRole = styled.span`
   padding: 0 2px;
   cursor: pointer;
   background: ${color};
@@ -25,13 +26,13 @@ const Role = styled.span`
   border: 1px solid transparent;
   opacity: 0.8;
 
-  ${ButtonWrapper}:hover & {
+  ${SimpleButtonWrapper}:hover & {
     border-color: white;
     opacity: 1;
   }
 `;
 
-const ButtonContent = styled.span<{ isHovered: boolean }>`
+const SimpleButtonContent = styled.span<{ isHovered: boolean }>`
   display: inline-block;
   padding: 0 5px;
   background: transparent;
@@ -46,20 +47,32 @@ const ButtonContent = styled.span<{ isHovered: boolean }>`
   }
 `;
 
-export default observer(function Button({ node }: ComponentProps) {
+const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
   const [isHovered, setHovered] = React.useState(false);
   const [ref, style] = useFocusable(node);
 
-  const isExpansible = node.attributes.ariaExpanded != null;
   return (
-    <ButtonWrapper ref={ref} style={style} isHovered={isHovered} isDisabled={!!node.attributes.disabled}>
-      <Role onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
+    <SimpleButtonWrapper ref={ref} style={style} isHovered={isHovered} isDisabled={!!node.attributes.disabled}>
+      <SimpleButtonRole onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
         🖱️
-      </Role>
-      <ButtonContent isHovered={isHovered}>
-        {node.accessibleName}&nbsp;
-        {isExpansible && (node.attributes.ariaExpanded ? "- expanded" : "- collapsed")}
-      </ButtonContent>
-    </ButtonWrapper>
+      </SimpleButtonRole>
+      <SimpleButtonContent isHovered={isHovered}>{node.accessibleName}&nbsp;</SimpleButtonContent>
+    </SimpleButtonWrapper>
   );
+});
+
+const ExpansibleButton = observer(function ExpansibleButton({ node }: ComponentProps) {
+  const render = React.useContext(renderContext);
+
+  return (
+    <BlockTemplate role={node.role} header={node.attributes.ariaExpanded ? "[expanded]" : "[collapsed]"}>
+      <SimpleButton node={node} />
+      {render(node.relations.ariaOwns)}
+    </BlockTemplate>
+  );
+});
+
+export default observer(function Button({ node }: ComponentProps) {
+  const isExpansible = node.attributes.ariaExpanded != null;
+  return isExpansible ? <ExpansibleButton node={node} /> : <SimpleButton node={node} />;
 });

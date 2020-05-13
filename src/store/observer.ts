@@ -28,7 +28,7 @@ export default class Observer {
     document.body.addEventListener("input", this.onInput, true);
     document.body.addEventListener("transitionend", this.onInput, true);
 
-    this.scheduler = new IdleScheduler(this.updateSideEffects, 100).start();
+    this.scheduler = new IdleScheduler(this.updateSideEffects, 500).start();
   }
 
   private getAomNode(node: Node | null) {

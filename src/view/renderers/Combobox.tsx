@@ -23,6 +23,8 @@ export default observer(function Combobox({ node }: ComponentProps) {
         <TextBoxContent key={node.key} style={style}>
           {node.attributes.htmlValue}&nbsp;
         </TextBoxContent>
+
+        {render(node.relations.ariaOwns)}
       </BlockTemplate>
     );
   }

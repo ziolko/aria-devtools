@@ -88,7 +88,7 @@ export default observer(function Table({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
   const table = node.relations.tableContext;
 
-  if (!table || !table.rows) {
+  if (!table || !table.rows || !table.visibleCell) {
     return (
       <BlockTemplate role={node.role} header={node.hasCustomAccessibleName ? `${node.accessibleName}` : ""}>
         {render(node.children)}
