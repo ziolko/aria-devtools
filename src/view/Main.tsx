@@ -6,35 +6,36 @@ import font from "./font";
 
 // @ts-ignore
 import root from "react-shadow";
+import AriaLive from "./AriaLive";
 
 const bottomBarHeight = "30px";
 
 // prettier-ignore
 const Layout = styled(root.div)`
-    margin: 0;
-    border: 0;
-    vertical-align: initial;
-    line-height: initial;
-    widows: initial;
-    orphans: initial;
-    overflow-wrap: initial;
-    user-select: none;
-    width: initial;
-    height: initial;
-    border-radius: 0;
-    text-align: left;
+    margin: 0 !important;
+    border: 0 !important;
+    vertical-align: initial !important;
+    line-height: initial !important;
+    widows: initial !important;
+    orphans: initial !important;
+    overflow-wrap: initial !important;
+    user-select: none !important;
+    width: initial !important;
+    height: initial !important;
+    border-radius: 0 !important;
+    text-align: left !important;
     
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 2147483648;
-    background: #222;
-    color: #eee;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    z-index: 2147483648 !important;
+    background: #222 !important;
+    color: #eee !important;
 
     ${font};
-    display: flex;   
+    display: flex !important;
 `;
 
 export interface MainProps {
@@ -72,12 +73,13 @@ const Alert = styled.div`
   left: 0;
   right: 0;
   background: red;
-`
+`;
 
 export default (props: MainProps) => {
   return (
     <Layout>
-      <ComponentWithScrollBar element={props.root} />
+      <ComponentWithScrollBar element={props.root} id="aria-dev-tools-scroll-parent" />
+      <AriaLive />
       {/*<ActionsBar>Test</ActionsBar>*/}
     </Layout>
   );

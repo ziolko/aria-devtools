@@ -52,7 +52,13 @@ const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
   const [ref, style] = useFocusable(node);
 
   return (
-    <SimpleButtonWrapper ref={ref} style={style} isHovered={isHovered} isDisabled={!!node.attributes.disabled}>
+    <SimpleButtonWrapper
+      ref={ref}
+      style={style}
+      isHovered={isHovered}
+      isDisabled={!!node.attributes.disabled}
+      onClick={() => node.domNode.click()}
+    >
       <SimpleButtonRole onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
         🖱️
       </SimpleButtonRole>

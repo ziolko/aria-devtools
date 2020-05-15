@@ -44,13 +44,10 @@ export default observer(function Link({ node }: ComponentProps) {
 
   return (
     <LinkWrapper ref={ref} style={style} isHovered={isHovered}>
-      <Role
-        onMouseOver={() => setHovered(true)}
-        onMouseOut={() => setHovered(false)}
-      >
+      <Role onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
         🔗
       </Role>
-      <LinkContent>{node.accessibleName || "<blank>"}</LinkContent>
+      <LinkContent onClick={() => node.domNode.click()}>{node.accessibleName || "<blank>"}</LinkContent>
     </LinkWrapper>
   );
 });

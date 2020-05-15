@@ -19,7 +19,6 @@ const BlockWrapper = styled.div<{
 
 const BlockMeta = styled.div`
   width: fit-content;
-  cursor: pointer;
 `;
 
 const BlockRole = styled.div<{ hasHeader: boolean; color: string }>`

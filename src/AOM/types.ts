@@ -1,5 +1,14 @@
 import { action, computed, observable } from "mobx";
-import { findAncestor, findDescendants, hasEmptyRoleMapping, isRootLandmark } from "./utils";
+import {
+  findAncestor,
+  findDescendants,
+  getNodeKey,
+  hasEmptyRoleMapping,
+  isFocused,
+  isHidden,
+  isInline,
+  isRootLandmark
+} from "./utils";
 import html = Mocha.reporters.html;
 
 export type HtmlID = string;
@@ -425,8 +434,10 @@ export type AriaRole =
   | null;
 
 export class TextElement {
-  key: AomKey;
-  role: AriaRole = "text";
+  readonly key: AomKey;
+  readonly role: AriaRole = "text";
+  readonly domNode: HTMLElement;
+
   @observable text: string;
   @observable htmlParent: NodeElement | null = null;
 
@@ -442,9 +453,10 @@ export class TextElement {
     return this.text;
   }
 
-  constructor(props: { key: AomKey; text: string }) {
+  constructor(props: { key: AomKey; text: string; node: HTMLElement }) {
     this.key = props.key;
     this.text = props.text;
+    this.domNode = props.node;
   }
 }
 
@@ -879,6 +891,10 @@ export class Aria {
     return this.rawAttributes["name"]?.trim();
   }
 
+  @computed get htmlType() {
+    return this.rawAttributes["type"]?.trim();
+  }
+
   @computed get htmlAlt() {
     return this.rawAttributes["alt"]?.trim();
   }
@@ -911,13 +927,13 @@ export class Aria {
 }
 
 export class NodeElement {
+  readonly domNode: HTMLElement;
   readonly key: AomKey;
   readonly htmlTag: string;
 
   @observable isHidden: boolean;
   @observable isFocused: boolean;
   @observable containsFocus?: boolean;
-  @observable isActiveAlarm: boolean = false;
   @observable isInline: boolean;
   @observable htmlParent: NodeElement | null = null;
   @observable htmlChildren: NonNullable<AOMElement>[] = [];
@@ -980,7 +996,8 @@ export class NodeElement {
       !!this.relations.labelledBy.length ||
       this.attributes.ariaLabel != null ||
       this.attributes.htmlAlt != null ||
-      this.attributes.htmlTitle != null
+      this.attributes.htmlTitle != null ||
+      this.attributes.htmlPlaceholder != null
     );
   }
 
@@ -1021,6 +1038,15 @@ export class NodeElement {
         return this.attributes.htmlPlaceholder;
       }
 
+      if (
+        this.htmlTag === "input" &&
+        this.attributes.htmlType &&
+        this.attributes.htmlValue &&
+        ["submit", "button", "reset"].includes(this.attributes.htmlType)
+      ) {
+        return this.attributes.htmlValue;
+      }
+
       const children = getAccessibleNameOf(this.children).trim();
 
       if (children) {
@@ -1041,12 +1067,13 @@ export class NodeElement {
     }
   }
 
-  constructor(props: { key: AomKey; htmlTag: string; isHidden: boolean; isInline: boolean; isFocused: boolean }) {
-    this.key = props.key;
-    this.htmlTag = props.htmlTag;
-    this.isHidden = props.isHidden;
-    this.isFocused = props.isFocused;
-    this.isInline = props.isInline;
+  constructor(node: HTMLElement) {
+    this.domNode = node;
+    this.htmlTag = node.tagName.toLowerCase();
+    this.key = getNodeKey(node);
+    this.isHidden = isHidden(node);
+    this.isFocused = isFocused(node);
+    this.isInline = isInline(node);
   }
 }
 

@@ -21,13 +21,19 @@ class RelationsForId {
   @observable htmlLabel: NonNullable<NodeElement>[] = [];
 }
 
+interface Alert {
+  source: NodeElement;
+  ariaLive: "polite" | "assertive";
+  content: string;
+}
+
 export default class Store {
   private keyToAomElement = new Map<AomKey, AOMElement>();
   private idToRelations = new Map<HtmlID, RelationsForId>();
 
   private focusedNode: NodeElement | null = null;
   private activeDescendantNode: NodeElement | null = null;
-  private activeAriaLiveNodes: NodeElement[] = [];
+  @observable activeAlerts: Alert[] = [];
 
   @action focus(element: AOMElement) {
     if (this.focusedNode && this.focusedNode !== element) {
@@ -57,32 +63,44 @@ export default class Store {
     }
   }
 
-  @action addActiveAriaLiveNode(node: NodeElement) {
-    this.clearActiveAriaLiveNode(node);
+  @action addActiveAlarm(node: NodeElement) {
+    const alertText = node.children
+      .map((x: AOMElement) => x?.accessibleName ?? "")
+      .join(" ")
+      .trim();
+
+    if (!alertText) {
+      return;
+    }
+
+    const activeAlert = this.activeAlerts.length > 0 ? this.activeAlerts[0] : null;
+    if (activeAlert?.source?.key === node.key && activeAlert.content === alertText) {
+      return;
+    }
+
+    this.clearActiveAlarm(node);
+
+    const alert = {
+      source: node,
+      content: alertText,
+      ariaLive: node.attributes.ariaLive as "polite" | "assertive"
+    };
 
     if (node.attributes.ariaLive === "assertive") {
-      this.activeAriaLiveNodes.forEach(x => (x.isActiveAlarm = false));
-      this.activeAriaLiveNodes.splice(0, this.activeAriaLiveNodes.length, node);
-      node.isActiveAlarm = true;
+      this.activeAlerts.splice(0, this.activeAlerts.length, alert);
     } else if (node.attributes.ariaLive === "polite") {
-      if (this.activeAriaLiveNodes.push(node) === 1) {
-        node.isActiveAlarm = true;
-      }
+      this.activeAlerts.push(alert);
     }
   }
 
-  @action clearActiveAriaLiveNode(node: NodeElement) {
-    node.isActiveAlarm = false;
-    const index = this.activeAriaLiveNodes.indexOf(node);
+  @action clearActiveAlarm(node: NodeElement) {
+    const index = this.activeAlerts.findIndex(x => x.source.key === node.key);
 
     if (index === -1) {
       return;
     }
 
-    this.activeAriaLiveNodes.splice(index, 1);
-    if (this.activeAriaLiveNodes.length > 0) {
-      this.activeAriaLiveNodes[0].isActiveAlarm = true;
-    }
+    this.activeAlerts.splice(index, 1);
   }
 
   register(element: AOMElement) {
@@ -112,7 +130,7 @@ export default class Store {
       }
 
       if (element.relations.ariaLiveContext?.root) {
-        this.addActiveAriaLiveNode(element.relations.ariaLiveContext.root);
+        this.addActiveAlarm(element.relations.ariaLiveContext.root);
       }
     }
 
@@ -132,6 +150,11 @@ export default class Store {
 
     if (el instanceof TextElement && update instanceof TextElement) {
       reconcileFields(el, update, ["text"]);
+
+      if (el.ariaParent?.relations.ariaLiveContext?.root) {
+        this.addActiveAlarm(el.ariaParent?.relations.ariaLiveContext?.root);
+      }
+
       return;
     }
 
@@ -141,17 +164,6 @@ export default class Store {
     }
 
     this.updateReferenceRelations(el, el.attributes, update.attributes);
-
-    const setActiveAriaLiveNode = () => {
-      const liveRoot = el.relations.ariaLiveContext?.root;
-      if (liveRoot && this.activeAriaLiveNodes[0] !== liveRoot) {
-        this.addActiveAriaLiveNode(liveRoot);
-      }
-    };
-
-    if (el.isHidden !== update.isHidden) {
-      setActiveAriaLiveNode();
-    }
 
     reconcileFields(el, update, ["isHidden", "isInline"]);
 
@@ -166,7 +178,6 @@ export default class Store {
       if (!sourceMap.has(node.key)) {
         node.htmlParent = null;
         this.unregister(node);
-        setActiveAriaLiveNode();
       }
     });
 
@@ -174,19 +185,20 @@ export default class Store {
     sourceMap.forEach(node => {
       const target = targetMap.get(node.key);
       if (target) {
-        if (target instanceof TextElement && node instanceof TextElement && target.text !== node.text) {
-          setActiveAriaLiveNode();
-        }
-
         this.update(node);
+        if (target instanceof TextElement && node instanceof TextElement && target.text !== node.text) {
+        }
       } else {
         node.htmlParent = el;
         this.register(node);
-        setActiveAriaLiveNode();
       }
     });
 
     reconcileChildListOrder(el.htmlChildren, update.htmlChildren, this);
+
+    if (el.relations.ariaLiveContext?.root) {
+      this.addActiveAlarm(el.relations.ariaLiveContext?.root);
+    }
 
     if (update.isFocused) {
       this.focus(el);
@@ -201,7 +213,7 @@ export default class Store {
     }
 
     if (element instanceof NodeElement) {
-      this.clearActiveAriaLiveNode(element);
+      this.clearActiveAlarm(element);
       this.updateReferenceRelations(element, element.attributes, null);
       element.relations.formContext = null;
       element.relations.labelContext = null;

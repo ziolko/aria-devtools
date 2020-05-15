@@ -23,7 +23,6 @@ import Checkbox from "./Checkbox";
 import Combobox from "./Combobox";
 import Table from "./Table";
 import Dialog from "./Dialog";
-import AriaLive from "./AriaLive";
 import MenuItem from "./MenuItem";
 
 type RendererMap = { [key in string]: React.FunctionComponent<ComponentProps> };
@@ -126,18 +125,8 @@ export default function render(element: AOMElement | AOMElement[]): any {
     renderer = Unsupported;
   }
 
-  const el = React.createElement(renderer, {
+  return React.createElement(renderer, {
     node,
     key: node.key
-  });
-
-  if (node.attributes.ariaLive === "off") {
-    return el;
-  }
-
-  return React.createElement(AriaLive, {
-    node,
-    key: node.key,
-    children: el
   });
 }

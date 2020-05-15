@@ -17,6 +17,11 @@ export const TextBoxContent = styled.span<{ multiline?: boolean; invalid?: boole
   border-radius: ${borderRadius};
   white-space: pre-wrap;
   ${props => props.multiline && "min-height: 40px; width: auto;"};
+
+  cursor: pointer;
+  :hover {
+    background: #555;
+  }
 `;
 
 const HeaderPart = styled.span`
@@ -48,9 +53,14 @@ export default observer(function TextBox({ node }: ComponentProps) {
         </>
       )}
       <HeaderPart>
-        {node.attributes.ariaRequired && "⭐"} <ValidityIcon invalid={node.attributes.ariaInvalid} />
+        {node.attributes.ariaRequired && "⭐"} <ValidityIcon invalid={!!node.attributes.ariaInvalid} />
       </HeaderPart>
-      <TextBoxContent multiline={node.attributes.ariaMultiline} invalid={node.attributes.ariaInvalid} style={style}>
+      <TextBoxContent
+        multiline={node.attributes.ariaMultiline}
+        invalid={node.attributes.ariaInvalid}
+        onClick={() => node.domNode.focus()}
+        style={style}
+      >
         {node.attributes.htmlValue}&nbsp;
       </TextBoxContent>
     </HorizontalBlockTemplate>

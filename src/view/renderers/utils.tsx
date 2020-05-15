@@ -1,7 +1,8 @@
 import React from "react";
-import { AOMElement, NodeElement, TextElement } from "../../AOM/types";
-import scrollIntoView from "scroll-into-view";
+import { AOMElement, NodeElement } from "../../AOM/types";
+import scroll from "scroll";
 
+const scrollPadding = 100;
 export const borderRadius = "5px";
 
 type RenderContext = (element: AOMElement | AOMElement[]) => any;
@@ -42,15 +43,40 @@ export function useFocusable(node: NonNullable<NodeElement>): [React.Ref<any>, o
   React.useEffect(() => {
     if (isActiveDescendant || (isFocused && !hasActiveDescendant)) {
       if (ref.current) {
-        scrollIntoView(ref.current, {
-          time: 200
-        });
+        scrollToElement(ref.current);
       }
-      // ref.current?.scrollIntoView({ block: "nearest" });
     }
   }, [isFocused, isActiveDescendant, hasActiveDescendant]);
 
   return [ref, style];
+}
+
+function scrollToElement(element: Element) {
+  const scrollParent = element.getRootNode()?.getElementById("aria-dev-tools-scroll-parent");
+  if (!scrollParent) {
+    return;
+  }
+
+  const viewport = scrollParent.getBoundingClientRect();
+  const el = element.getBoundingClientRect();
+
+  // The element is larger than the viewport - scroll top of the element to the top of the viewport
+  if (el.height + scrollPadding > viewport.height) {
+    scroll.top(scrollParent, scrollParent.scrollTop + el.top - 10);
+    return;
+  }
+
+  // The element starts above the top of the viewport - scroll top of the element to the top of the viewport
+  if (el.top - scrollPadding < viewport.top) {
+    scroll.top(scrollParent, scrollParent.scrollTop + el.top - scrollPadding);
+    return;
+  }
+
+  // The element ends below the bottom of the viewport - scroll bottom of the element to the bottom of the viewport
+  if (el.bottom + scrollPadding > viewport.bottom) {
+    scroll.top(scrollParent, scrollParent.scrollTop + el.bottom - viewport.bottom + scrollPadding);
+    return;
+  }
 }
 
 export function getHeader(...els: (string | undefined)[]) {

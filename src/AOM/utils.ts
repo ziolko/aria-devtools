@@ -46,7 +46,11 @@ export function trimStart(el: AOMElement[]) {
     const textElement = el[i] as TextElement;
 
     if (isText && textElement.text.trimStart() !== "") {
-      const trimmedTextElement = new TextElement({ key: textElement.key, text: textElement.text.trimStart() });
+      const trimmedTextElement = new TextElement({
+        node: textElement.domNode,
+        key: textElement.key,
+        text: textElement.text.trimStart()
+      });
       trimmedTextElement.htmlParent = textElement.htmlParent;
 
       result.push(trimmedTextElement);

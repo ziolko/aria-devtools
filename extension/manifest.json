@@ -1,15 +1,15 @@
 {
-  "name": "Injecta",
-  "version": "0.0.1",
+  "name": "ARIA DevTools",
+  "version": "1.0.0",
   "manifest_version": 2,
-  "description": "Injecting stuff",
-  "homepage_url": "http://danharper.me",
+  "description": "Powerful development tools for creating accessible rich internet applications",
+  "homepage_url": "http://ariadevtools.com",
   "background": {
     "scripts": ["background.js"],
     "persistent": true
   },
   "browser_action": {
-    "default_title": "Inject!"
+    "default_title": "Toggle accessibility view"
   },
   "commands": {
     "_execute_browser_action": {

@@ -1,13 +1,13 @@
 import { css } from "styled-components";
 
 export default css`
-  font-family: "Fira Code", monospace;
-  font-size: 12px;
-  font-weight: initial;
+  font-family: "Fira Code", monospace !important;
+  font-size: 12px !important;
+  font-weight: initial !important;
 
   /* cyrillic-ext */
   @font-face {
-    font-family: "Fira Code";
+    font-family: "Fira Code" !important;
     font-style: normal;
     font-weight: 400;
     font-display: swap;

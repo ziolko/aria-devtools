@@ -11,7 +11,7 @@ export default function traverse(htmlNode: Node, traversedNodes = new Map<Node, 
 
   if (htmlNode.nodeType === Node.TEXT_NODE) {
     const text = htmlNode.textContent;
-    return text ? new TextElement({ key: getNodeKey(htmlNode), text }) : null;
+    return text ? new TextElement({ key: getNodeKey(htmlNode), text, node: htmlNode }) : null;
   }
 
   if (htmlNode.nodeType !== Node.ELEMENT_NODE) {
@@ -25,13 +25,7 @@ export default function traverse(htmlNode: Node, traversedNodes = new Map<Node, 
     return null;
   }
 
-  const result: NodeElement = new NodeElement({
-    key: getNodeKey(node),
-    htmlTag: tagName,
-    isHidden: isHidden(node),
-    isFocused: isFocused(node),
-    isInline: isInline(node)
-  });
+  const result: NodeElement = new NodeElement(node);
 
   const attributes = result.getRawAttributes();
   Object.keys(attributes).forEach(attribute => {

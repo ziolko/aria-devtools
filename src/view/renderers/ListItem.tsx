@@ -23,7 +23,6 @@ const ListItemWrapper = styled.div<{ isHovered: boolean }>`
 
 const Role = styled.div`
   padding: 0 4px;
-  cursor: pointer;
   line-height: 14px;
   border-radius: ${borderRadius};
   border: 1px solid transparent;

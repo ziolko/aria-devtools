@@ -20,7 +20,7 @@ export default observer(function Combobox({ node }: ComponentProps) {
   if (node.htmlTag === "input") {
     return (
       <BlockTemplate role={node.role} header={header} ref={ref}>
-        <TextBoxContent key={node.key} style={style}>
+        <TextBoxContent key={node.key} style={style} onClick={() => node.domNode.focus()}>
           {node.attributes.htmlValue}&nbsp;
         </TextBoxContent>
 

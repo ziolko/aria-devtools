@@ -20,7 +20,6 @@ const Role = styled.div<{ color: string }>`
   padding: 0 5px;
   border: 1px solid transparent;
   opacity: 0.8;
-  cursor: pointer;
 
   ${HeadingWrapper}:hover & {
     border-color: white;

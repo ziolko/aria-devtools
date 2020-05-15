@@ -7,7 +7,7 @@ import styled from "styled-components";
 const Wrapper = styled.div`
   padding: 0 10px;
   --block-display: block;
-  
+
   ::before,
   ::after {
     content: "";
@@ -16,10 +16,12 @@ const Wrapper = styled.div`
   }
 `;
 
-export default function Component(props: { element: AOMElement, className?: string }) {
+export default function Component(props: { element: AOMElement; className?: string; id: string }) {
   return (
     <renderContext.Provider value={render}>
-      <Wrapper className={props.className}>{render(props.element)}</Wrapper>
+      <Wrapper className={props.className} id={props.id}>
+        {render(props.element)}
+      </Wrapper>
     </renderContext.Provider>
   );
 }
