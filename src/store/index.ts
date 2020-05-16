@@ -22,7 +22,7 @@ class RelationsForId {
 }
 
 interface Alert {
-  source: NodeElement;
+  source: AomKey;
   ariaLive: "polite" | "assertive";
   content: string;
 }
@@ -33,6 +33,8 @@ export default class Store {
 
   private focusedNode: NodeElement | null = null;
   private activeDescendantNode: NodeElement | null = null;
+
+  @observable lastAlertText = new Map<AomKey, string>();
   @observable activeAlerts: Alert[] = [];
 
   @action focus(element: AOMElement) {
@@ -63,25 +65,21 @@ export default class Store {
     }
   }
 
-  @action addActiveAlarm(node: NodeElement) {
+  @action updateActiveAlert(node: NodeElement) {
     const alertText = node.children
       .map((x: AOMElement) => x?.accessibleName ?? "")
       .join(" ")
       .trim();
 
-    if (!alertText) {
+    if (!alertText || alertText === this.lastAlertText.get(node.key)) {
       return;
     }
 
-    const activeAlert = this.activeAlerts.length > 0 ? this.activeAlerts[0] : null;
-    if (activeAlert?.source?.key === node.key && activeAlert.content === alertText) {
-      return;
-    }
-
-    this.clearActiveAlarm(node);
+    this.clearActiveAlerts(node.key);
+    this.lastAlertText.set(node.key, alertText);
 
     const alert = {
-      source: node,
+      source: node.key,
       content: alertText,
       ariaLive: node.attributes.ariaLive as "polite" | "assertive"
     };
@@ -93,14 +91,17 @@ export default class Store {
     }
   }
 
-  @action clearActiveAlarm(node: NodeElement) {
-    const index = this.activeAlerts.findIndex(x => x.source.key === node.key);
-
-    if (index === -1) {
+  @action clearActiveAlerts(nodeKey?: AomKey) {
+    if (!nodeKey) {
+      this.activeAlerts.splice(0, this.activeAlerts.length);
       return;
     }
 
-    this.activeAlerts.splice(index, 1);
+    const index = this.activeAlerts.findIndex(x => x.source === nodeKey);
+
+    if (index !== -1) {
+      this.activeAlerts.splice(index, 1);
+    }
   }
 
   register(element: AOMElement) {
@@ -130,7 +131,7 @@ export default class Store {
       }
 
       if (element.relations.ariaLiveContext?.root) {
-        this.addActiveAlarm(element.relations.ariaLiveContext.root);
+        this.updateActiveAlert(element.relations.ariaLiveContext.root);
       }
     }
 
@@ -152,7 +153,7 @@ export default class Store {
       reconcileFields(el, update, ["text"]);
 
       if (el.ariaParent?.relations.ariaLiveContext?.root) {
-        this.addActiveAlarm(el.ariaParent?.relations.ariaLiveContext?.root);
+        this.updateActiveAlert(el.ariaParent?.relations.ariaLiveContext?.root);
       }
 
       return;
@@ -197,7 +198,7 @@ export default class Store {
     reconcileChildListOrder(el.htmlChildren, update.htmlChildren, this);
 
     if (el.relations.ariaLiveContext?.root) {
-      this.addActiveAlarm(el.relations.ariaLiveContext?.root);
+      this.updateActiveAlert(el.relations.ariaLiveContext?.root);
     }
 
     if (update.isFocused) {
@@ -213,7 +214,7 @@ export default class Store {
     }
 
     if (element instanceof NodeElement) {
-      this.clearActiveAlarm(element);
+      this.clearActiveAlerts(element.key);
       this.updateReferenceRelations(element, element.attributes, null);
       element.relations.formContext = null;
       element.relations.labelContext = null;

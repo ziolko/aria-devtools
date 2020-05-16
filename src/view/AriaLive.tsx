@@ -25,19 +25,19 @@ export default observer(function AriaLive() {
     if (!currentAlarm) {
       return;
     }
-    const handler = () => store.clearActiveAlarm(currentAlarm.source);
+    const handler = () => store.clearActiveAlerts(currentAlarm.source);
     document.addEventListener("keydown", handler, true);
     return () => {
       document.removeEventListener("keydown", handler, true);
     };
-  }, [currentAlarm, store.clearActiveAlarm]);
+  }, [currentAlarm, store.clearActiveAlerts]);
 
   if (!currentAlarm) {
     return null;
   }
 
   return (
-    <AriaLiveWrapper onClick={() => store.clearActiveAlarm(currentAlarm.source)} level={currentAlarm.ariaLive}>
+    <AriaLiveWrapper onClick={() => store.clearActiveAlerts(currentAlarm.source)} level={currentAlarm.ariaLive}>
       <div style={{ marginBottom: 20 }}>{currentAlarm.content}</div>
       <em>Note: Click anywhere or press any key to acknowledge the message</em>
     </AriaLiveWrapper>

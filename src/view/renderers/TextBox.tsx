@@ -44,6 +44,11 @@ const ValidityIcon = styled.span<{ invalid: boolean }>`
 
 export default observer(function TextBox({ node }: ComponentProps) {
   const [ref, style] = useFocusable(node);
+  let value = node.attributes.htmlValue;
+
+  if (node.htmlTag === "input" && node.attributes.htmlType === "password") {
+    value = "*".repeat(value?.length ?? 0);
+  }
 
   return (
     <HorizontalBlockTemplate header={node.role ?? `<${node.htmlTag}>`} ref={ref}>
@@ -61,7 +66,7 @@ export default observer(function TextBox({ node }: ComponentProps) {
         onClick={() => node.domNode.focus()}
         style={style}
       >
-        {node.attributes.htmlValue}&nbsp;
+        {value}&nbsp;
       </TextBoxContent>
     </HorizontalBlockTemplate>
   );

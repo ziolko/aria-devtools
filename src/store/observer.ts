@@ -15,6 +15,8 @@ export default class Observer {
     this.root = traverse(root);
 
     this.store.register(this.root);
+    this.store.clearActiveAlerts();
+
     this.observer = new MutationObserver(this.onMutation);
     this.observer.observe(root, {
       attributes: true,

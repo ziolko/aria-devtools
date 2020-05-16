@@ -655,7 +655,7 @@ export class Aria {
 
     if (htmlTag === "input") {
       const type = this.rawAttributes.type?.trim();
-      if (!type || type === "text" || type === "email" || type === "number") {
+      if (!type || type === "text" || type === "email" || type === "number" || type === "password") {
         return { role: "textbox" };
       }
 
