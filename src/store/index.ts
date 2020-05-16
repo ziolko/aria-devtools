@@ -66,17 +66,23 @@ export default class Store {
   }
 
   @action updateActiveAlert(node: NodeElement) {
-    const alertText = node.children
-      .map((x: AOMElement) => x?.accessibleName ?? "")
-      .join(" ")
-      .trim();
+    const alertText = node.isHidden
+      ? ""
+      : node.children
+          .map((x: AOMElement) => x?.accessibleName ?? "")
+          .join(" ")
+          .trim();
 
-    if (!alertText || alertText === this.lastAlertText.get(node.key)) {
+    if (alertText === this.lastAlertText.get(node.key)) {
       return;
     }
 
-    this.clearActiveAlerts(node.key);
     this.lastAlertText.set(node.key, alertText);
+    this.acknowledgeAlert(node.key);
+
+    if (!alertText) {
+      return;
+    }
 
     const alert = {
       source: node.key,
@@ -91,12 +97,11 @@ export default class Store {
     }
   }
 
-  @action clearActiveAlerts(nodeKey?: AomKey) {
-    if (!nodeKey) {
-      this.activeAlerts.splice(0, this.activeAlerts.length);
-      return;
-    }
+  @action clearActiveAlerts() {
+    this.activeAlerts.splice(0, this.activeAlerts.length);
+  }
 
+  @action acknowledgeAlert(nodeKey: AomKey) {
     const index = this.activeAlerts.findIndex(x => x.source === nodeKey);
 
     if (index !== -1) {
@@ -214,19 +219,23 @@ export default class Store {
     }
 
     if (element instanceof NodeElement) {
-      this.clearActiveAlerts(element.key);
+      element.htmlChildren.forEach(item => item && this.unregister(item));
+
+      if (element.relations.ariaLiveContext?.root) {
+        this.updateActiveAlert(element.relations.ariaLiveContext.root);
+      }
+
       this.updateReferenceRelations(element, element.attributes, null);
       element.relations.formContext = null;
       element.relations.labelContext = null;
       element.relations.fieldsetContext = null;
-      element.relations.ariaLiveContext = null;
       element.relations.tableContext = null;
-
-      element.htmlChildren.forEach(item => item && this.unregister(item));
+      element.relations.ariaLiveContext = null;
 
       if (element.isFocused) {
         this.focus(null);
       }
+    } else {
     }
 
     this.keyToAomElement.delete(element.key);
