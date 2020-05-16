@@ -57,7 +57,13 @@ export default observer(function Null({ node }: ComponentProps) {
 
   if (node.htmlTag !== "body" && (node.isFocused || (node.attributes.tabindex as number) >= 0)) {
     return (
-      <BlockTemplate role={`<${node.htmlTag}>`} ref={ref} style={style} color="#666">
+      <BlockTemplate
+        role={`<${node.htmlTag}>`}
+        ref={ref}
+        style={style}
+        color="#666"
+        header={node.hasCustomAccessibleName ? node.accessibleName : undefined}
+      >
         {content}
       </BlockTemplate>
     );

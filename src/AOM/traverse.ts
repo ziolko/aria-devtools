@@ -11,7 +11,7 @@ export default function traverse(htmlNode: Node, traversedNodes = new Map<Node, 
 
   if (htmlNode.nodeType === Node.TEXT_NODE) {
     const text = htmlNode.textContent;
-    return text ? new TextElement({ key: getNodeKey(htmlNode), text, node: htmlNode }) : null;
+    return text ? new TextElement({ key: getNodeKey(htmlNode), text, node: htmlNode as HTMLElement }) : null;
   }
 
   if (htmlNode.nodeType !== Node.ELEMENT_NODE) {

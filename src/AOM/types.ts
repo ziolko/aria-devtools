@@ -615,6 +615,10 @@ export class Aria {
       return { role: this.rawAttributes.href?.trim() ? "link" : null };
     }
 
+    if (htmlTag === "menu") {
+      return { role: "list" };
+    }
+
     if (htmlTag === "ol" || htmlTag === "ul") {
       return { role: "list" };
     }

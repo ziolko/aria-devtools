@@ -22,7 +22,8 @@ export default class Observer {
       attributes: true,
       childList: true,
       characterData: true,
-      subtree: true
+      subtree: true,
+      attributeOldValue: true
     });
 
     document.body.addEventListener("blur", this.onBlur, true);
@@ -57,6 +58,14 @@ export default class Observer {
     runInAction("mutation", () => {
       for (const mutation of mutations) {
         if (this.getAomNode(mutation.target)) {
+          const target = mutation.target as HTMLElement;
+          if (
+            mutation.type === "attributes" &&
+            mutation.oldValue === target.getAttribute(mutation.attributeName ?? "")
+          ) {
+            continue;
+          }
+
           this.updateNode(mutation.target);
         }
       }

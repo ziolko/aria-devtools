@@ -11,7 +11,7 @@ import {
   AriaTableContext
 } from "../AOM/types";
 import { action, observable } from "mobx";
-import { getMap, reconcileChildListOrder, reconcileFields } from "../AOM/reconcile";
+import { getMap, reconcileFields } from "../AOM/reconcile";
 
 class RelationsForId {
   @observable elementsWithId: NonNullable<NodeElement>[] = [];
@@ -179,28 +179,39 @@ export default class Store {
     const targetMap = getMap(el.htmlChildren);
     const sourceMap = getMap(update.htmlChildren);
 
+    let childrenChanged = false;
+
     // Disconnect deleted children from store
     targetMap.forEach(node => {
       if (!sourceMap.has(node.key)) {
         node.htmlParent = null;
         this.unregister(node);
+        childrenChanged = true;
       }
     });
 
     // Register new children in store
     sourceMap.forEach(node => {
-      const target = targetMap.get(node.key);
-      if (target) {
+      if (this.keyToAomElement.has(node.key)) {
         this.update(node);
-        if (target instanceof TextElement && node instanceof TextElement && target.text !== node.text) {
-        }
       } else {
-        node.htmlParent = el;
         this.register(node);
+        childrenChanged = true;
       }
     });
 
-    reconcileChildListOrder(el.htmlChildren, update.htmlChildren, this);
+    if (childrenChanged) {
+      el.htmlChildren = update.htmlChildren.map(x => {
+        const result = this.getElement(x.key);
+        if (!result) {
+          throw new Error("Unexpected empty item");
+        }
+        if (result.htmlParent !== el) {
+          result.htmlParent = el;
+        }
+        return result;
+      });
+    }
 
     if (el.relations.ariaLiveContext?.root) {
       this.updateActiveAlert(el.relations.ariaLiveContext?.root);
