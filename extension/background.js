@@ -21,8 +21,7 @@ chrome.browserAction.onClicked.addListener(async function(tab) {
     tabsState[tab.id] = true;
   }
 });
-// // this is the background code...
-//
+
 chrome.tabs.onUpdated.addListener(async function(tabId, changeInfo) {
   const [isLoaded] = await executeScript(tabId, { code: "window.isLoaded" });
 

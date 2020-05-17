@@ -659,9 +659,6 @@ export class Aria {
 
     if (htmlTag === "input") {
       const type = this.rawAttributes.type?.trim();
-      if (!type || type === "text" || type === "email" || type === "number" || type === "password") {
-        return { role: "textbox" };
-      }
 
       if (type === "checkbox") {
         const isMixed = this.rawProperties.indeterminate;
@@ -698,6 +695,8 @@ export class Aria {
       if (type === "submit") {
         return { role: "button" };
       }
+
+      return { role: "textbox" };
     }
 
     if (htmlTag === "textarea") {

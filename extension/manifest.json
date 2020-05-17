@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "manifest_version": 2,
   "description": "Powerful development tools for creating accessible rich internet applications",
-  "homepage_url": "http://ariadevtools.com",
+  "homepage_url": "https://ariadevtools.com",
+  "icons": { "256": "logo-256.png" },
   "background": {
     "scripts": ["background.js"],
     "persistent": true
   },
   "browser_action": {
-    "default_title": "Toggle accessibility view"
+    "default_title": "ARIA DevTools"
   },
   "commands": {
     "_execute_browser_action": {
