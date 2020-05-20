@@ -8,4 +8,6 @@
 1. `yarn`
 2. `yarn build` 
 
+I personally work on Windows but the platform shouldn't matter.
+
 The build result can be found in the `extension` directory.
