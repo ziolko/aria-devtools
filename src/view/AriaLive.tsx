@@ -18,9 +18,6 @@ export default observer(function AriaLive() {
   const store = useStore();
   const currentAlarm = store.activeAlerts.length > 0 ? store.activeAlerts[0] : null;
 
-  // if()
-  // console.log("current alarm", currentAlarm)
-
   React.useEffect(() => {
     if (!currentAlarm) {
       return;

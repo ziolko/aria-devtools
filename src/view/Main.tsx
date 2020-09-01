@@ -7,6 +7,7 @@ import font from "./font";
 // @ts-ignore
 import root from "react-shadow";
 import AriaLive from "./AriaLive";
+import Feedback from "./Feedback";
 
 const bottomBarHeight = "30px";
 
@@ -80,6 +81,7 @@ export default (props: MainProps) => {
     <Layout>
       <ComponentWithScrollBar element={props.root} id="aria-dev-tools-scroll-parent" />
       <AriaLive />
+      <Feedback />
       {/*<ActionsBar>Test</ActionsBar>*/}
     </Layout>
   );

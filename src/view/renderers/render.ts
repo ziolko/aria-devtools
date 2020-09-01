@@ -48,7 +48,7 @@ const renderers: RendererMap = {
   radio: Radio,
   checkbox: Checkbox,
   article: Block,
-  form: Null,
+  form: Block,
   heading: Heading,
   term: Term,
   link: Link,
