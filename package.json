@@ -1,6 +1,6 @@
 {
   "name": "a10y-view",
-  "version": "0.1.0",
+  "version": "1.1.2",
   "private": true,
   "dependencies": {
     "@popperjs/core": "^2.0.6",
