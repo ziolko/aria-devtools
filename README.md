@@ -1,6 +1,6 @@
-Creating accessible web applications is difficult. It gets even harder if you don't understand how users with disabilities use computers. 
+Creating accessible web applications is difficult. It gets even harder if you don't understand how people with disabilities use computers. 
 
-With ARIA DevTools you can see your website the way screen readers present it to the blind users. All page elements are presented according to their explicit or implied ARIA roles. This includes headings, images, tables and form items beyond others. 
+With ARIA DevTools you see your website the way screen readers present it to the blind users. All page elements are presented according to their explicit or implied ARIA roles. This includes headings, images, tables and form items beyond others. 
 
 It's now easy to spot missing ARIA labels, misused ARIA roles, and incomplete keyboard support. This makes testing and development of accessible websites easier.
 
@@ -13,7 +13,7 @@ Install the extension, open your website and click the
 <img src="https://github.com/ziolko/accessibility/raw/master/extension/logo-256.png" width="16"> icon.
 
 ## Contributing
-I highly appreciate all pull requests and raised issues.  
+I highly appreciate all pull requests and raised issues. You can also help by sharing this extension with your friends on Twitter and starring this repository.
 
 ### Prerequisites
 1. NodeJS (e.g. 10.15.1)
