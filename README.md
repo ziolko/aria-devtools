@@ -1,3 +1,5 @@
+# <img src="https://github.com/ziolko/accessibility/raw/master/extension/logo-256.png" width="24"> ARIA DevTools
+
 Creating accessible web applications is difficult. It gets even harder if you don't understand how people with disabilities use computers. 
 
 With ARIA DevTools you see your website the way screen readers present it to the blind users. All page elements are presented according to their explicit or implied ARIA roles. This includes headings, images, tables and form items beyond others. 
