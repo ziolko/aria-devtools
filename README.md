@@ -10,7 +10,7 @@ This extension is available for free in the [Chrome Web Store](https://chrome.go
 
 ## Usage
 Install the extension, open your website and click the 
-<img src="https://github.com/ziolko/accessibility/raw/master/extension/logo-256.png" width="16"> icon.
+<img src="https://github.com/ziolko/accessibility/raw/master/extension/logo-256.png" width="16"> browser extension icon.
 
 ## Contributing
 I highly appreciate all pull requests and raised issues. You can also help by sharing this extension with your friends on Twitter and starring this repository.
