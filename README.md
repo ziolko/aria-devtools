@@ -20,6 +20,7 @@ I highly appreciate all pull requests and raised issues. You can also help by sh
 [![](https://github.com/ziolko.png?size=60)](https://github.com/ziolko)
 [![](https://github.com/pcorpet.png?size=60)](https://github.com/pcorpet)
 
+## Working with this repository
 
 ### Prerequisites
 1. NodeJS (e.g. 10.15.1)
@@ -34,7 +35,7 @@ in the browser [extensions page](Chrome extensions page).
 Note: You need to enable _Developer Mode_ in the Chrome extensions 
 page to load unpacked extensions. 
 
-## Building production artifact 
+### Building production artifact 
 1. `yarn`
 2. `yarn build` 
 
