@@ -49,7 +49,7 @@ export default observer(function Radio({ node }: ComponentProps) {
       <RadioIcon
         onMouseOver={() => setHovered(true)}
         onMouseOut={() => setHovered(false)}
-        checked={!!node.attributes.htmlChecked}
+        checked={!!node.attributes.htmlChecked || node.attributes.ariaChecked === 'true'}
       />
       <RadioLabel>{node.accessibleName}</RadioLabel>
     </RadioButtonWrapper>
