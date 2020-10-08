@@ -14,8 +14,12 @@ This extension is available for free in the [Chrome Web Store](https://chrome.go
 Install the extension, open your website and click the 
 <img src="https://github.com/ziolko/accessibility/raw/master/extension/logo-256.png" width="16"> browser extension icon.
 
-## Contributing
+## Contributors ✨
 I highly appreciate all pull requests and raised issues. You can also help by sharing this extension with your friends on Twitter and starring this repository.
+
+[![](https://github.com/ziolko.png?size=60)](https://github.com/ziolko)
+[![](https://github.com/pcorpet.png?size=60)](https://github.com/pcorpet)
+
 
 ### Prerequisites
 1. NodeJS (e.g. 10.15.1)
