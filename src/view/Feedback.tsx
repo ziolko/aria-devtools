@@ -1,4 +1,5 @@
 import React from "react";
+import Bowser from 'bowser'
 import styled from "styled-components";
 
 const FeedbackWrapper = styled.span`
@@ -32,15 +33,19 @@ const openUrl = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     link.href = e.currentTarget.getAttribute("href") ?? "";
     link.click();
 }
+
+const isChrome =  Bowser.getParser(window.navigator.userAgent).isBrowser("Chrome")
+
 export default () => (
     <FeedbackWrapper>
-        <FeedbackButton
-            tabIndex={-1}
-            href={reviewUrl}
-            onClick={openUrl}
+        {isChrome && <FeedbackButton
+          tabIndex={-1}
+          href={reviewUrl}
+          onClick={openUrl}
         >
-            ⭐ Rate extension
+          ⭐ Rate extension
         </FeedbackButton>
+        }
       <FeedbackButton
         tabIndex={-1}
         href={feedbackUrl}
