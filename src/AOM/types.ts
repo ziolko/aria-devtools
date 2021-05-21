@@ -166,6 +166,7 @@ export class HtmlTableContext {
 
     rowNodes.forEach((rowNode, rowIndex) => {
       let colIndex = 0;
+      result.data[rowIndex] = result.data[rowIndex] || []
 
       this.getNodes(rowNode, "td", "th").forEach(cell => {
         while (result.get(rowIndex, colIndex)) colIndex++;
