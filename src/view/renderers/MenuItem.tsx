@@ -5,10 +5,13 @@ import { renderContext, ComponentProps } from "./utils";
 import { trimStart } from "../../AOM/utils";
 import { observer } from "mobx-react";
 import { HorizontalBlockTemplate } from "./Heading";
+import {ClickableHorizontalBlock} from "./Tab";
 
 export default observer(function MenuItem({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
   const [ref, style] = useFocusable(node);
+
+  return <ClickableHorizontalBlock node={node} header={`${node.role} ${node.attributes.ariaLevel ?? ""}`} />
 
   return (
     <HorizontalBlockTemplate

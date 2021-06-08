@@ -51,7 +51,7 @@ export function useFocusable(node: NonNullable<NodeElement>): [React.Ref<any>, o
   return [ref, style];
 }
 
-function scrollToElement(element: Element) {
+export function scrollToElement(element: Element) {
   const scrollParent = element.getRootNode()?.getElementById("aria-dev-tools-scroll-parent");
   if (!scrollParent) {
     return;

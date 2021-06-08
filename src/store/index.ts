@@ -16,6 +16,7 @@ import { getMap, reconcileFields } from "../AOM/reconcile";
 class RelationsForId {
   @observable elementsWithId: NonNullable<NodeElement>[] = [];
   @observable ariaLabelOf: NonNullable<NodeElement>[] = [];
+  @observable ariaControlledBy: NonNullable<NodeElement>[] = [];
   @observable ariaOwnedBy: NonNullable<NodeElement>[] = [];
   @observable ariaActiveDescendantOf: NonNullable<NodeElement>[] = [];
   @observable htmlLabel: NonNullable<NodeElement>[] = [];
@@ -261,6 +262,7 @@ export default class Store {
       if (oldAttributes?.id) {
         removeFrom(this.getRelationsForId(oldAttributes?.id).elementsWithId, node);
         node.relations.ariaLabelOf = [];
+        node.relations.ariaControlledBy = [];
         node.relations.ariaActiveDescendantOf = [];
         node.relations.ariaOwnedBy = [];
         node.relations.htmlForLabelledBy = [];
@@ -271,6 +273,7 @@ export default class Store {
 
         rel.elementsWithId.push(node);
         node.relations.ariaLabelOf = rel.ariaLabelOf;
+        node.relations.ariaControlledBy = rel.ariaControlledBy;
         node.relations.ariaActiveDescendantOf = rel.ariaActiveDescendantOf;
         node.relations.ariaOwnedBy = rel.ariaOwnedBy;
         node.relations.htmlForLabelledBy = rel.htmlLabel;
@@ -299,6 +302,14 @@ export default class Store {
       newAttributes?.ariaOwns,
       "ariaOwns",
       "ariaOwnedBy"
+    );
+
+    this.updateSingleReferenceRelation(
+      node,
+      oldAttributes?.ariaControls,
+      newAttributes?.ariaControls,
+      "ariaControls",
+      "ariaControlledBy"
     );
 
     this.updateSingleReferenceRelation(

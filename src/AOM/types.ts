@@ -390,7 +390,6 @@ export type AriaRole =
   | "article"
   | "banner"
   | "button"
-  | "cell"
   | "checkbox"
   | "combobox"
   | "complementary"
@@ -401,7 +400,6 @@ export type AriaRole =
   | "figure"
   | "form"
   | "grid"
-  | "gridcell"
   | "heading"
   | "img"
   | "image"
@@ -490,7 +488,7 @@ export class RawNodeAttributes {
   @observable "aria-activedescendant"?: HtmlID = undefined;
   @observable "aria-atomic"?: boolean = undefined;
   @observable "aria-autocomplete"?: "inline" | "list" | "both" | "none" = undefined;
-  @observable "aria-controls"?: HtmlID[] = undefined;
+  @observable "aria-controls"?: HtmlID = undefined;
   @observable "aria-disabled"?: string = undefined;
   @observable "aria-modal"?: string = undefined;
   @observable "aria-describedby"?: HtmlID = undefined;
@@ -812,6 +810,9 @@ export class Aria {
   }
   @computed get disabled() {
     return this.rawAttributes.disabled != null || asBoolean(this.rawAttributes["aria-disabled"]);
+  }
+  @computed get ariaControls() {
+    return this.rawAttributes["aria-controls"]?.trim();
   }
   @computed get ariaLabel() {
     return this.rawAttributes["aria-label"]?.trim();

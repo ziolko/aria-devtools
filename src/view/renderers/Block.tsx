@@ -3,17 +3,18 @@ import React from "react";
 import { borderRadius, useFocusable } from "./utils";
 import { renderContext, ComponentProps } from "./utils";
 import { observer } from "mobx-react";
-import { AOMElement, AriaRole, NodeElement, TextElement } from "../../AOM/types";
 
 const BlockWrapper = styled.div<{
   role: string;
   color: string;
   isHovered: boolean;
+  background?: string;
 }>`
   margin: 10px 0;
   position: relative;
   min-height: ${props => props.role.length * 7.5 + 20}px;
   border-radius: ${borderRadius};
+  background: ${props => props.background ?? 'transparent'};
   ${props => props.isHovered && `background: ${props.color}`};
 `;
 
@@ -100,10 +101,11 @@ export interface BlockTemplateProps {
   style?: object;
   className?: string;
   color?: string;
+  background?: string;
 }
 
 export const BlockTemplate = React.forwardRef(function BlockTemplate(
-  { role, header, children, style, className, color }: BlockTemplateProps,
+  { role, header, children, style, className, color, background }: BlockTemplateProps,
   ref: React.Ref<HTMLDivElement>
 ) {
   color = color ?? "#333377";
@@ -111,7 +113,7 @@ export const BlockTemplate = React.forwardRef(function BlockTemplate(
   const [isHovered, setHovered] = React.useState(false);
 
   return (
-    <BlockWrapper ref={ref} className={className} style={style} color={color} role={role ?? ""} isHovered={isHovered}>
+    <BlockWrapper ref={ref} className={className} style={style} color={color} role={role ?? ""} isHovered={isHovered} background={background}>
       <BlockMeta onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
         <BlockRole hasHeader={!!header} color={color}>
           <BlockRoleContent>{role}</BlockRoleContent>

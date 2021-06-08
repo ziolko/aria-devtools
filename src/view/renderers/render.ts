@@ -24,6 +24,8 @@ import Combobox from "./Combobox";
 import Table from "./Table";
 import Dialog from "./Dialog";
 import MenuItem from "./MenuItem";
+import Tab from "./Tab";
+import TabPanel from "./TabPanel";
 
 type RendererMap = { [key in string]: React.FunctionComponent<ComponentProps> };
 
@@ -83,8 +85,8 @@ const renderers: RendererMap = {
   rowheader: Null,
   menuitem: MenuItem,
   option: Option,
-  tab: Block,
-  tabpanel: Block
+  tab: Tab,
+  tabpanel: TabPanel
 };
 
 const htmlTagRenderers: RendererMap = {
