@@ -4,6 +4,7 @@ import {HorizontalBlockTemplate} from "./Heading";
 import {ComponentProps, renderContext, useFocusable} from "./utils";
 import {observer} from "mobx-react";
 import {NodeElement} from "../../AOM/types";
+import {trimStart} from "../../AOM/utils";
 
 const TabContent = styled.div`
   display: inline-block;
@@ -19,7 +20,7 @@ interface ClickableHorizontalBlockProps {
     node: NodeElement
 }
 
-export function ClickableHorizontalBlock({ node, header }: ClickableHorizontalBlockProps) {
+export const ClickableHorizontalBlock = observer(function ClickableHorizontalBlock({ node, header }: ClickableHorizontalBlockProps) {
     const [ref, style] = useFocusable(node);
 
     return (
@@ -32,7 +33,7 @@ export function ClickableHorizontalBlock({ node, header }: ClickableHorizontalBl
             <TabContent onClick={() => node.domNode.click()}>{node.accessibleName}</TabContent>
         </HorizontalBlockTemplate>
     );
-}
+});
 
 export default observer(function Tab({node}: ComponentProps) {
     const header = (
