@@ -1,10 +1,9 @@
 import React from "react";
 import styled from "styled-components";
 import {HorizontalBlockTemplate} from "./Heading";
-import {ComponentProps, renderContext, useFocusable} from "./utils";
+import {ComponentProps, useFocusable} from "./utils";
 import {observer} from "mobx-react";
 import {NodeElement} from "../../AOM/types";
-import {trimStart} from "../../AOM/utils";
 
 const TabContent = styled.div`
   display: inline-block;
@@ -35,11 +34,15 @@ export const ClickableHorizontalBlock = observer(function ClickableHorizontalBlo
     );
 });
 
+export function HeaderTag({isVisible, children} : { isVisible: boolean | undefined, children: React.ReactChild}) {
+    return isVisible ? <span style={{textTransform: 'none'}}> {children}</span> : null
+}
+
 export default observer(function Tab({node}: ComponentProps) {
     const header = (
         <>
             {node.role}
-            {node.attributes.ariaSelected ? <span style={{textTransform: 'none'}}> [selected]</span> : null}
+            <HeaderTag isVisible={node.attributes.ariaSelected}>selected</HeaderTag>
         </>
     );
 

@@ -844,6 +844,9 @@ export class Aria {
   @computed get ariaModal() {
     return asBoolean(this.rawAttributes["aria-modal"]);
   }
+  @computed get ariaHasPopup() {
+    return asBoolean(this.rawAttributes["aria-haspopup"]?.trim());
+  }
   @computed get ariaLevel(): number | undefined {
     return asNumber(this.rawAttributes["aria-level"]?.trim() ?? this.mappedAttributes?.ariaLevel);
   }
