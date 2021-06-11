@@ -42,7 +42,7 @@ export default observer(function Tab({node}: ComponentProps) {
     const header = (
         <>
             {node.role}
-            <HeaderTag isVisible={node.attributes.ariaSelected}>selected</HeaderTag>
+            <HeaderTag isVisible={node.attributes.ariaSelected}>[selected]</HeaderTag>
         </>
     );
 
