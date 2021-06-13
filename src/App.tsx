@@ -19,7 +19,15 @@ const useDisableMouseEvents = (rootRef: React.RefObject<HTMLDivElement>) => {
     const onClick = (e: MouseEvent) => {
       if (rootRef.current && rootRef.current.contains(e.target as Node)) {
         const target = e.composedPath()[0];
-        target?.dispatchEvent(new Event(e.type, { bubbles: true }));
+        const newEvent = new MouseEvent(e.type, {
+          bubbles: true,
+          clientX: e.clientX,
+          clientY: e.clientY,
+          screenX: e.screenX,
+          screenY: e.screenY,
+        });
+
+        target?.dispatchEvent(newEvent);
 
         e.preventDefault();
         e.stopImmediatePropagation();

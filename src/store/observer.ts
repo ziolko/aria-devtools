@@ -29,7 +29,10 @@ export default class Observer {
     document.body.addEventListener("blur", this.onBlur, true);
     document.body.addEventListener("focus", this.onFocus, true);
     document.body.addEventListener("input", this.onInput, true);
-    document.body.addEventListener("transitionend", this.onInput, true);
+    document.body.addEventListener("transitionend", this.onTransition, true);
+    document.body.addEventListener("animationend", this.onTransition, true);
+    document.body.addEventListener("transitioncancel", this.onTransition, true);
+    document.body.addEventListener("animationcancel", this.onTransition, true);
 
     this.scheduler = new IdleScheduler(this.updateSideEffects, 500).start();
   }
@@ -49,6 +52,13 @@ export default class Observer {
 
   private onInput = (event: any) => {
     runInAction("input", () => {
+      this.updateNode(event.target);
+      this.batchUpdate();
+    });
+  };
+
+  private onTransition = (event: any) => {
+    runInAction("transition", () => {
       this.updateNode(event.target);
       this.batchUpdate();
     });
@@ -133,6 +143,9 @@ export default class Observer {
     document.body.removeEventListener("focus", this.onFocus, true);
     document.body.removeEventListener("blur", this.onBlur, true);
     document.body.removeEventListener("input", this.onInput, true);
-    document.body.removeEventListener("transitionend", this.onInput, true);
+    document.body.removeEventListener("transitionend", this.onTransition, true);
+    document.body.removeEventListener("animationend", this.onTransition, true);
+    document.body.removeEventListener("transitioncancel", this.onTransition, true);
+    document.body.removeEventListener("animationcancel", this.onTransition, true);
   }
 }
