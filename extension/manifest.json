@@ -1,6 +1,6 @@
 {
   "name": "ARIA DevTools",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "manifest_version": 2,
   "description": "Easily spot missing ARIA labels, misused ARIA roles, and incomplete keyboard support in your web applications.",
   "homepage_url": "https://chrome.google.com/webstore/detail/aria-devtools/dneemiigcbbgbdjlcdjjnianlikimpck?hl=en",

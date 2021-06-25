@@ -47,17 +47,22 @@ export default function SidePanel() {
                            isActive={state.isResizing}/>
 
             <Header>
-                <div>Looking for sponsors!</div>
+                <div>We need your help!</div>
                 <CloseIcon onClick={() => setLastOpen(Date.now())}>x</CloseIcon>
             </Header>
             <p>
-                I am proud that ARIA DevTools supports over 1200 people (and growing!) around the
+                I am proud that ARIA DevTools supports over 1200 people around the
                 world in their effort to create websites accessible to everyone.
             </p>
             <p>
-                With proper funding ARIA DevTools can become an indispensable tool. If your company cares about
+                With proper funding it will become an indispensable tool. If your company cares about
                 web accessibility and wants to support this open-source project reach out to me at {" "}
                 <a href={"mailto:mateusz@roombelt.com"}>mateusz@roombelt.com</a>!
+            </p>
+            <p>
+                Even if you don't want to support ARIA DevTools directly you may like my other project
+                {" "}<a href="https://roombelt.com" target="_blank">Roombelt</a>.{" "}
+                Check it out and perhaps it will be a great fit for your team!
             </p>
         </ActionsBar>
     );
