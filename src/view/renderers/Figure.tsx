@@ -16,7 +16,7 @@ const FigureWrapper = styled.div`
 export default observer(function Figure({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
   return (
-    <BlockTemplate role={node.role}>
+    <BlockTemplate role={node.role} node={node}>
       <FigureWrapper data-type="figure">
         {render(node.children)}
       </FigureWrapper>

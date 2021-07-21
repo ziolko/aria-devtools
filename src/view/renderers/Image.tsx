@@ -1,8 +1,8 @@
 import styled from "styled-components";
 import React from "react";
-import { borderRadius, useFocusable } from "./utils";
-import { ComponentProps } from "./utils";
-import { observer } from "mobx-react";
+import {borderRadius, ComponentProps, hoveredBoxShadow, selectedBoxShadow, useFocusable} from "./utils";
+import {observer} from "mobx-react";
+import {useOpenSidePanel} from "../side-panel";
 
 const color = "#8b2900";
 
@@ -16,7 +16,7 @@ const ImageWrapper = styled.span<{ isHovered: boolean }>`
   ${props => props.isHovered && `background: ${color}`};
 `;
 
-const Role = styled.span`
+const Role = styled.span<{ isSelected: boolean }>`
   display: inline-block;
   margin-right: 3px;
   padding: 0 2px;
@@ -24,40 +24,45 @@ const Role = styled.span`
   background: ${color};
   line-height: 14px;
   border-radius: ${borderRadius};
-  border: 1px solid transparent;
   opacity: 0.8;
 
   ${ImageWrapper}:hover & {
-    border-color: white;
+    ${hoveredBoxShadow};
     opacity: 1;
   }
+
+  ${props => props.isSelected && selectedBoxShadow};
 `;
 
 const Content = styled.span`
   cursor: pointer;
   border-radius: 2px;
+
   :hover {
     background: #555;
   }
 `;
 
-export default observer(function Image({ node }: ComponentProps) {
-  const [isHovered, setHovered] = React.useState(false);
-  const [ref, style] = useFocusable(node);
+export default observer(function Image({node}: ComponentProps) {
+    const [isHovered, setHovered] = React.useState(false);
+    const [ref, style] = useFocusable(node);
+    const openSidePanel = useOpenSidePanel();
 
-  if (node.accessibleName === "") {
-    return null;
-  }
+    if (node.accessibleName === "") {
+        return null;
+    }
 
-  return (
-    <ImageWrapper ref={ref} style={style} isHovered={isHovered}>
-      <Role
-        onMouseOver={() => setHovered(true)}
-        onMouseOut={() => setHovered(false)}
-      >
-        🖼️
-      </Role>
-      <Content>{node.accessibleName || "<blank>"}</Content>
-    </ImageWrapper>
-  );
+    return (
+        <ImageWrapper ref={ref} style={style} isHovered={isHovered}>
+            <Role
+                onMouseOver={() => setHovered(true)}
+                onMouseOut={() => setHovered(false)}
+                onClick={() => openSidePanel(node)}
+                isSelected={node.isOpenInSidePanel}
+            >
+                🖼️
+            </Role>
+            <Content>{node.accessibleName || "<blank>"}</Content>
+        </ImageWrapper>
+    );
 });

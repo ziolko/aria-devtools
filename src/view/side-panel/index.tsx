@@ -1,54 +1,56 @@
-import React, {useCallback, useEffect, useReducer, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import styled from "styled-components";
+import {observer} from "mobx-react";
 
-interface ResizablePaneState {
-    isResizing: boolean;
-    width: number;
+import {useStore} from "../../store-context";
+import {NodeElement} from "../../AOM/types";
+
+type ResizablePaneState = null | {
     startCursorX: number;
-    startWidth: number;
+    currentCursorX: number;
 }
 
-export default function SidePanel() {
-    const [lastOpen, setLastOpen] = useStorage("sponsorship-panel-last-open", 0);
-    const [state, dispatch] = useReducer(
-        (state: ResizablePaneState, action: any) => {
-            if (action.type === "start") {
-                return {...state, isResizing: true, startCursorX: action.cursorX, startWidth: state.width};
-            }
-            if (action.type === "update") {
-                return {...state, width: state.startWidth + state.startCursorX - action.cursorX};
-            }
-            if (action.type === "commit") {
-                return {...state, isResizing: false};
-            }
-            if (action.type === "abort") {
-                return {...state, isResizing: false, width: state.startWidth};
-            }
-            return state;
-        },
-        {width: 400, isResizing: false, startCursorX: 0, startWidth: 0}
-    );
+export function useOpenSidePanel() {
+    const store = useStore();
+    return useCallback((node: NodeElement | null) => store.openSidePanel(node), [store])
+}
 
-    const onMouseDown = (event: React.MouseEvent) => dispatch({type: "start", cursorX: event.clientX})
+export default observer(function SidePanel() {
+    const store = useStore();
+    const openSidePanel = useOpenSidePanel();
+    const [width, setWidth] = useStorage<number>("side-panel-size", 400);
+    const [dragState, setDragState] = useState<ResizablePaneState>(null)
+
+    const onMouseDown = (event: React.MouseEvent) => {
+        setDragState({startCursorX: event.clientX, currentCursorX: event.clientX});
+    }
+
     const onMouseMove = (event: React.MouseEvent) => {
-        dispatch({type: "update", cursorX: event.clientX});
-    };
-    const onMouseUp = () => dispatch({type: "commit"});
+        setDragState(dragState && {...dragState, currentCursorX: event.clientX});
+    }
 
-    if (lastOpen === undefined || lastOpen > Date.now() - 1000 * 60 * 60 * 24 * 14) {
+    const currentWidth = (width ?? 0) + (dragState ? (dragState.startCursorX - dragState.currentCursorX) : 0)
+    const onMouseUp = () => {
+        if (dragState != null) {
+            setWidth(currentWidth)
+            setDragState(null);
+        }
+    };
+
+    if (!store.sidePanelNode) {
         return null;
     }
 
     return (
-        <ActionsBar style={{flexBasis: state.width}}>
+        <ActionsBar style={{flexBasis: currentWidth}}>
             <ResizeHandler onMouseDown={onMouseDown}
-                           onMouseUp={state.isResizing ? onMouseUp : undefined}
-                           onMouseMove={state.isResizing ? onMouseMove : undefined}
-                           isActive={state.isResizing}/>
+                           onMouseUp={dragState ? onMouseUp : undefined}
+                           onMouseMove={dragState ? onMouseMove : undefined}
+                           isActive={!!dragState}/>
 
             <Header>
-                <div>We need your help!</div>
-                <CloseIcon onClick={() => setLastOpen(Date.now())}>x</CloseIcon>
+                <div>We need your help: {store.sidePanelNode.role}</div>
+                <CloseIcon onClick={() => openSidePanel(null)}>x</CloseIcon>
             </Header>
             <p>
                 I am proud that ARIA DevTools supports over 1200 people around the
@@ -66,7 +68,7 @@ export default function SidePanel() {
             </p>
         </ActionsBar>
     );
-}
+});
 
 const Header = styled.div`
   justify-content: space-between;
@@ -126,7 +128,6 @@ function useStorage<T>(key: string, defaultValue: T): [T | undefined, (value: T)
         let isCurrent = true;
         // @ts-ignore
         chrome.storage.local.get([key], (result) => {
-            console.log("A", result)
             isCurrent && setValue(result[key] ?? defaultValue)
         });
         return () => {
@@ -135,10 +136,9 @@ function useStorage<T>(key: string, defaultValue: T): [T | undefined, (value: T)
     }, [key])
 
     const updateValue = useCallback((newValue: T) => {
+        setValue(newValue)
         // @ts-ignore
-        chrome.storage.local.set({[key]: newValue}, () => {
-            setValue(newValue)
-        });
+        chrome.storage.local.set({[key]: newValue});
     }, [])
 
     return [value, updateValue];

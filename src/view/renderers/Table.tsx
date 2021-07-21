@@ -90,7 +90,7 @@ export default observer(function Table({ node }: ComponentProps) {
 
   if (!table || !table.rows || !table.visibleCell) {
     return (
-      <BlockTemplate role={node.role} header={node.hasCustomAccessibleName ? `${node.accessibleName}` : ""}>
+      <BlockTemplate role={node.role} header={node.hasCustomAccessibleName ? `${node.accessibleName}` : ""} node={node}>
         {render(node.children)}
       </BlockTemplate>
     );
@@ -102,6 +102,7 @@ export default observer(function Table({ node }: ComponentProps) {
       header={`${node.hasCustomAccessibleName ? `${node.accessibleName} - ` : ""} ${table.rowCount} row(s), ${
         table.colCount
       } column(s)`}
+      node={node}
     >
       <Navigation>
         <ColNav>

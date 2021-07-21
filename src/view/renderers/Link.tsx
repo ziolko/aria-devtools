@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import React from "react";
-import { borderRadius, useFocusable } from "./utils";
-import { ComponentProps } from "./utils";
-import { observer } from "mobx-react";
+import {borderRadius, ComponentProps, hoveredBoxShadow, renderContext, selectedBoxShadow, useFocusable} from "./utils";
+import {observer} from "mobx-react";
+import {useOpenSidePanel} from "../side-panel";
+import {trimStart} from "../../AOM/utils";
 
 const LinkWrapper = styled.span<{ isHovered: boolean }>`
   margin: 10px 0;
@@ -13,20 +14,21 @@ const LinkWrapper = styled.span<{ isHovered: boolean }>`
   ${props => props.isHovered && `background: #548a33`};
 `;
 
-const Role = styled.span`
+const Role = styled.span<{ isSelected: boolean }>`
   margin-right: 3px;
   padding: 0 2px;
   cursor: pointer;
   background: #548a33;
   line-height: 14px;
   border-radius: ${borderRadius};
-  border: 1px solid transparent;
   opacity: 0.8;
 
   ${LinkWrapper}:hover & {
-    border-color: white;
     opacity: 1;
+    ${hoveredBoxShadow};
   }
+
+  ${props => props.isSelected && selectedBoxShadow};
 `;
 
 const LinkContent = styled.span`
@@ -38,16 +40,22 @@ const LinkContent = styled.span`
   }
 `;
 
-export default observer(function Link({ node }: ComponentProps) {
-  const [isHovered, setHovered] = React.useState(false);
-  const [ref, style] = useFocusable(node);
+export default observer(function Link({node}: ComponentProps) {
+    const render = React.useContext(renderContext);
+    const [isHovered, setHovered] = React.useState(false);
+    const [ref, style] = useFocusable(node);
+    const openSidePanel = useOpenSidePanel();
 
-  return (
-    <LinkWrapper ref={ref} style={style} isHovered={isHovered}>
-      <Role onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
-        🔗
-      </Role>
-      <LinkContent onClick={() => node.domNode.click()}>{node.accessibleName || "<blank>"}</LinkContent>
-    </LinkWrapper>
-  );
+    return (
+        <LinkWrapper ref={ref} style={style} isHovered={isHovered}>
+            <Role onMouseOver={() => setHovered(true)}
+                  onMouseOut={() => setHovered(false)}
+                  onClick={() => openSidePanel(node)}
+                  isSelected={node.isOpenInSidePanel}>
+                🔗
+            </Role>
+            <LinkContent
+                onClick={() => node.domNode.click()}>{node.hasCustomAccessibleName ? node.accessibleName || "<blank>" : render(trimStart(node.htmlChildren))}</LinkContent>
+        </LinkWrapper>
+    );
 });

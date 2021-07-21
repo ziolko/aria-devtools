@@ -1,14 +1,15 @@
-import styled from "styled-components";
+import styled, {css} from "styled-components";
 import React from "react";
-import { borderRadius, useFocusable } from "./utils";
-import { renderContext, ComponentProps } from "./utils";
-import { observer } from "mobx-react";
+import {borderRadius, ComponentProps, hoveredBoxShadow, renderContext, selectedBoxShadow, useFocusable} from "./utils";
+import {observer} from "mobx-react";
+import {useOpenSidePanel} from "../side-panel";
+import {NodeElement} from "../../AOM/types";
 
 const BlockWrapper = styled.div<{
-  role: string;
-  color: string;
-  isHovered: boolean;
-  background?: string;
+    role: string;
+    color: string;
+    isHovered: boolean;
+    background?: string;
 }>`
   margin: 10px 0;
   position: relative;
@@ -18,11 +19,32 @@ const BlockWrapper = styled.div<{
   ${props => props.isHovered && `background: ${props.color}`};
 `;
 
-const BlockMeta = styled.div`
+
+const BlockMeta = styled.div<{isSelected: boolean}>`
   width: fit-content;
+  opacity: 0.8;
+
+  ${BlockWrapper}:hover > & {
+    opacity: 1;
+  }
 `;
 
-const BlockRole = styled.div<{ hasHeader: boolean; color: string }>`
+const BlockRoleBorder = styled.div<{isSelected: boolean}>`
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  border-radius: ${borderRadius};
+
+  ${BlockWrapper}:hover > ${BlockMeta} > & {
+    ${hoveredBoxShadow};
+  }
+  
+  ${props => props.isSelected && selectedBoxShadow};
+`
+
+const BlockRole = styled.div<{ color: string; isSelected: boolean }>`
   position: absolute;
   left: 0;
   top: 0;
@@ -33,15 +55,8 @@ const BlockRole = styled.div<{ hasHeader: boolean; color: string }>`
   line-height: 20px;
   text-transform: uppercase;
   border-radius: ${borderRadius};
-  border-top-right-radius: ${props => (props.hasHeader ? "0px" : borderRadius)};
-  border: 1px solid transparent;
-  opacity: 0.8;
   word-break: keep-all;
-
-  ${BlockWrapper}:hover > ${BlockMeta} > & {
-    border-color: white;
-    opacity: 1;
-  }
+  cursor: pointer;
 `;
 
 const BlockRoleContent = styled.span`
@@ -49,37 +64,25 @@ const BlockRoleContent = styled.span`
   top: 10px;
 `;
 
-const BlockHeader = styled.div<{ color: string }>`
+const BlockHeader = styled.div<{ color: string; isSelected: boolean }>`
   width: fit-content;
   background: ${props => props.color};
-  padding: 0 10px;
+  padding: 0 10px 0 30px;
   line-height: 20px;
-  border-radius: 0 ${borderRadius} ${borderRadius} 0;
-  border: 1px solid transparent;
+  border-radius:  ${borderRadius};
   position: relative;
-  margin-left: 21px;
-  opacity: 0.8;
+  cursor: pointer;
+  
+  ${BlockWrapper}:hover > ${BlockMeta} > & {
+    ${hoveredBoxShadow};
+  }
+  ${props => props.isSelected && selectedBoxShadow};
 
   ::first-letter {
     text-transform: uppercase;
   }
 
-  ${BlockWrapper}:hover > ${BlockMeta} > & {
-    border-color: white;
-    border-left-color: ${props => props.color};
-    opacity: 1;
-
-    // Fix the weird gap in border;
-    ::before {
-      content: "";
-      position: absolute;
-      left: -2px;
-      width: 10px;
-      top: -1px;
-      height: 1px;
-      background: white;
-    }
-  }
+  
 `;
 
 const BlockContent = styled.div`
@@ -95,49 +98,55 @@ const BlockContent = styled.div`
 `;
 
 export interface BlockTemplateProps {
-  role: string | null;
-  header?: string;
-  children: any;
-  style?: object;
-  className?: string;
-  color?: string;
-  background?: string;
+    node: NodeElement;
+    role: string | null;
+    header?: string;
+    children: any;
+    style?: object;
+    className?: string;
+    color?: string;
+    background?: string;
 }
 
-export const BlockTemplate = React.forwardRef(function BlockTemplate(
-  { role, header, children, style, className, color, background }: BlockTemplateProps,
-  ref: React.Ref<HTMLDivElement>
+export const BlockTemplate = observer(React.forwardRef(function BlockTemplate(
+    {node, role, header, children, style, className, color, background}: BlockTemplateProps,
+    ref: React.Ref<HTMLDivElement>
 ) {
-  color = color ?? "#333377";
+    color = color ?? "#333377";
 
-  const [isHovered, setHovered] = React.useState(false);
+    const openSidePanel = useOpenSidePanel();
+    const [isHovered, setHovered] = React.useState(false);
 
-  return (
-    <BlockWrapper ref={ref} className={className} style={style} color={color} role={role ?? ""} isHovered={isHovered} background={background}>
-      <BlockMeta onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}>
-        <BlockRole hasHeader={!!header} color={color}>
-          <BlockRoleContent>{role}</BlockRoleContent>
-        </BlockRole>
-        {header && <BlockHeader color={color}>{header}</BlockHeader>}
-      </BlockMeta>
-      <BlockContent>{children}</BlockContent>
-    </BlockWrapper>
-  );
-});
+    return (
+        <BlockWrapper ref={ref} className={className} style={style} color={color} role={role ?? ""}
+                      isHovered={isHovered} background={background}>
+            <BlockMeta onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)} isSelected={node.isOpenInSidePanel}>
+                <BlockRoleBorder isSelected={node.isOpenInSidePanel} />
+                {header && <BlockHeader color={color} onClick={() => openSidePanel(node)}
+                                        isSelected={node.isOpenInSidePanel}>{header}</BlockHeader>}
+                <BlockRole color={color} onClick={() => openSidePanel(node)}
+                           isSelected={node.isOpenInSidePanel}>
+                    <BlockRoleContent>{role}</BlockRoleContent>
+                </BlockRole>
+            </BlockMeta>
+            <BlockContent>{children}</BlockContent>
+        </BlockWrapper>
+    );
+}));
 
-export default observer(function({ node }: ComponentProps) {
-  const [ref, style] = useFocusable(node);
-  const render = React.useContext(renderContext);
+export default observer(function ({node}: ComponentProps) {
+    const [ref, style] = useFocusable(node);
+    const render = React.useContext(renderContext);
 
-  const label = node.hasCustomAccessibleName ? node.accessibleName : undefined;
+    const label = node.hasCustomAccessibleName ? node.accessibleName : undefined;
 
-  if (!node.hasContent) {
-    return null;
-  }
+    if (!node.hasContent) {
+        return null;
+    }
 
-  return (
-    <BlockTemplate ref={ref} style={style} role={node.role} header={label}>
-      {render(node.children)}
-    </BlockTemplate>
-  );
+    return (
+        <BlockTemplate ref={ref} style={style} role={node.role} header={label} node={node}>
+            {render(node.children)}
+        </BlockTemplate>
+    );
 });

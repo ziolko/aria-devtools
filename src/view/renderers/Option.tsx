@@ -30,7 +30,7 @@ export default observer(function Option({ node }: ComponentProps) {
   const [ref, style] = useFocusable(node);
 
   return (
-    <HorizontalBlockTemplate header={`${node.role}`} ref={ref} style={style}>
+    <HorizontalBlockTemplate header={`${node.role}`} ref={ref} style={style} node={node}>
       {node.attributes.ariaSelected === true && <CheckboxIcon checked={true} />}
       {node.attributes.ariaSelected === false && <CheckboxIcon checked={false} />}
       {render(trimStart(node.htmlChildren))}

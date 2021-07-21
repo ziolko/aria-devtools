@@ -4,6 +4,8 @@ import scroll from "scroll";
 
 const scrollPadding = 100;
 export const borderRadius = "5px";
+export const hoveredBoxShadow = `box-shadow: 0 0 0 1px white;`;
+export const selectedBoxShadow = `box-shadow: 0 0 0 3px #eee !important;`
 
 type RenderContext = (element: AOMElement | AOMElement[]) => any;
 export type ComponentProps = { node: NodeElement };

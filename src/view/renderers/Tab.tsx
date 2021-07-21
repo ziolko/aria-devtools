@@ -19,7 +19,10 @@ interface ClickableHorizontalBlockProps {
     node: NodeElement
 }
 
-export const ClickableHorizontalBlock = observer(function ClickableHorizontalBlock({ node, header }: ClickableHorizontalBlockProps) {
+export const ClickableHorizontalBlock = observer(function ClickableHorizontalBlock({
+                                                                                       node,
+                                                                                       header
+                                                                                   }: ClickableHorizontalBlockProps) {
     const [ref, style] = useFocusable(node);
 
     return (
@@ -28,13 +31,13 @@ export const ClickableHorizontalBlock = observer(function ClickableHorizontalBlo
             style={style}
             header={header}
             color="#333377"
-            onClick={() => node.domNode.click()}>
+            node={node}>
             <TabContent onClick={() => node.domNode.click()}>{node.accessibleName}</TabContent>
         </HorizontalBlockTemplate>
     );
 });
 
-export function HeaderTag({isVisible, children} : { isVisible: boolean | undefined, children: React.ReactChild}) {
+export function HeaderTag({isVisible, children}: { isVisible: boolean | undefined, children: React.ReactChild }) {
     return isVisible ? <span style={{textTransform: 'none'}}> {children}</span> : null
 }
 
@@ -46,5 +49,5 @@ export default observer(function Tab({node}: ComponentProps) {
         </>
     );
 
-    return <ClickableHorizontalBlock node={node} header={header} />
+    return <ClickableHorizontalBlock node={node} header={header}/>
 });

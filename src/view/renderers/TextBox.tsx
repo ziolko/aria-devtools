@@ -51,7 +51,7 @@ export default observer(function TextBox({ node }: ComponentProps) {
   }
 
   return (
-    <HorizontalBlockTemplate header={node.role ?? `<${node.htmlTag}>`} ref={ref}>
+    <HorizontalBlockTemplate header={node.role ?? `<${node.htmlTag}>`} ref={ref} node={node}>
       {node.hasCustomAccessibleName && (
         <>
           <HeaderPart>{node.accessibleName}</HeaderPart>{" "}

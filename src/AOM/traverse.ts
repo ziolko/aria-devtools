@@ -1,6 +1,5 @@
 import { AOMElement, NodeElement, TextElement } from "./types";
-import { getNodeKey, isFocused, isHidden, isInline } from "./utils";
-import { read } from "@popperjs/core";
+import { getNodeKey } from "./utils";
 
 const ignoredHtmlElements = ["script", "noscript", "style"];
 

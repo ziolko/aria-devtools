@@ -75,6 +75,7 @@ export default observer(function Null({node}: ComponentProps) {
                 style={style}
                 color="#666"
                 header={node.hasCustomAccessibleName ? node.accessibleName : undefined}
+                node={node}
             >
                 {content}
             </BlockTemplate>

@@ -10,7 +10,7 @@ export default observer(function TabPanel({ node }: ComponentProps) {
   const forceHovered = node.relations.ariaControlledBy.some(x => x.isFocused)
 
   return (
-    <BlockTemplate ref={ref} style={style} role={node.role} background={forceHovered ? '#3b3b4d' : 'null'}>
+    <BlockTemplate ref={ref} style={style} role={node.role} background={forceHovered ? '#3b3b4d' : 'null'} node={node}>
       {render(node.children)}
     </BlockTemplate>
   );

@@ -31,7 +31,7 @@ export default observer(function Dialog({ node }: ComponentProps) {
   return (
     <>
       {isActiveModal && <Glass />}
-      <DialogBlock ref={ref} isActiveModal={isActiveModal} role={`${node.role}`} style={style} header={header}>
+      <DialogBlock ref={ref} isActiveModal={isActiveModal} role={`${node.role}`} style={style} header={header} node={node}>
         {render(node.children)}
       </DialogBlock>
     </>

@@ -19,7 +19,7 @@ export default observer(function Combobox({ node }: ComponentProps) {
 
   if (node.htmlTag === "input") {
     return (
-      <BlockTemplate role={node.role} header={header} ref={ref}>
+      <BlockTemplate role={node.role} header={header} ref={ref} node={node}>
         <TextBoxContent key={node.key} style={style} onClick={() => node.domNode.focus()}>
           {node.attributes.htmlValue}&nbsp;
         </TextBoxContent>
@@ -34,7 +34,7 @@ export default observer(function Combobox({ node }: ComponentProps) {
     const currentOption = options.find(x => x.attributes.htmlValue === node.attributes.htmlValue);
 
     return (
-      <BlockTemplate role={node.role} header={header} ref={ref}>
+      <BlockTemplate role={node.role} header={header} ref={ref} node={node}>
         <TextBoxContent key={node.key} style={style}>
           {currentOption?.accessibleName}&nbsp;
         </TextBoxContent>
@@ -44,7 +44,7 @@ export default observer(function Combobox({ node }: ComponentProps) {
   }
 
   return (
-    <BlockTemplate role={node.role} header={header}>
+    <BlockTemplate role={node.role} header={header} node={node}>
       {render(node.children)}
     </BlockTemplate>
   );
