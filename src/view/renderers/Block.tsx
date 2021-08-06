@@ -120,12 +120,12 @@ export const BlockTemplate = observer(React.forwardRef(function BlockTemplate(
     return (
         <BlockWrapper ref={ref} className={className} style={style} color={color} role={role ?? ""}
                       isHovered={isHovered} background={background}>
-            <BlockMeta onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)} isSelected={node.isOpenInSidePanel}>
-                <BlockRoleBorder isSelected={node.isOpenInSidePanel} />
+            <BlockMeta onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)} isSelected={node?.isOpenInSidePanel}>
+                <BlockRoleBorder isSelected={node?.isOpenInSidePanel} />
                 {header && <BlockHeader color={color} onClick={() => openSidePanel(node)}
-                                        isSelected={node.isOpenInSidePanel}>{header}</BlockHeader>}
+                                        isSelected={node?.isOpenInSidePanel}>{header}</BlockHeader>}
                 <BlockRole color={color} onClick={() => openSidePanel(node)}
-                           isSelected={node.isOpenInSidePanel}>
+                           isSelected={node?.isOpenInSidePanel}>
                     <BlockRoleContent>{role}</BlockRoleContent>
                 </BlockRole>
             </BlockMeta>

@@ -534,6 +534,7 @@ function asBoolean(value: string | boolean | null | undefined) {
 export class RawNodeProperties {
     @observable value?: string = undefined;
     @observable invalid?: boolean = undefined;
+    @observable disabled?: boolean = undefined;
     @observable checked?: boolean = undefined;
     @observable indeterminate?: boolean = undefined;
     @observable tabIndex: number = -1;
@@ -575,6 +576,14 @@ export class Aria {
 
             if (rawRole === "alert") {
                 return {role: rawRole, ariaLive: "assertive", ariaAtomic: true};
+            }
+
+            if (rawRole === "switch" && htmlTag === "input" && this.rawAttributes.type?.trim() === "checkbox") {
+                return {
+                    role: rawRole,
+                    ariaChecked: this.rawProperties.checked ? "true" : "false",
+                    ariaDisabled: this.rawProperties.disabled
+                };
             }
 
             return {role: rawRole};
@@ -865,6 +874,10 @@ export class Aria {
 
     @computed get ariaPosInSet(): number | undefined {
         return asNumber(this.rawAttributes["aria-posinset"]?.trim() ?? this.mappedAttributes?.ariaPosInSet);
+    }
+
+    @computed get ariaDisabled() {
+        return asBoolean(this.rawAttributes["aria-disabled"]?.trim()) ?? this.mappedAttributes?.ariaDisabled;
     }
 
     @computed get ariaChecked(): "true" | "false" | "mixed" | undefined {

@@ -51,7 +51,7 @@ export default observer(function Link({node}: ComponentProps) {
             <Role onMouseOver={() => setHovered(true)}
                   onMouseOut={() => setHovered(false)}
                   onClick={() => openSidePanel(node)}
-                  isSelected={node.isOpenInSidePanel}>
+                  isSelected={node?.isOpenInSidePanel}>
                 🔗
             </Role>
             <LinkContent

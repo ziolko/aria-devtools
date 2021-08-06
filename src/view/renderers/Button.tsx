@@ -71,7 +71,7 @@ const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
                         onMouseOver={() => setHovered(true)}
                         onMouseOut={() => setHovered(false)}
                         onClick={() => openSidePanel(node)}
-                        isSelected={node.isOpenInSidePanel}>
+                        isSelected={node?.isOpenInSidePanel}>
         🖱️
       </SimpleButtonRole>
       <SimpleButtonContent isHovered={isHovered}>{node.accessibleName}&nbsp;</SimpleButtonContent>

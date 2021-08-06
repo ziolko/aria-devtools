@@ -41,33 +41,35 @@ export default observer(function SidePanel() {
         return null;
     }
 
-    return (
-        <ActionsBar style={{flexBasis: currentWidth}}>
-            <ResizeHandler onMouseDown={onMouseDown}
-                           onMouseUp={dragState ? onMouseUp : undefined}
-                           onMouseMove={dragState ? onMouseMove : undefined}
-                           isActive={!!dragState}/>
+    return null;
 
-            <Header>
-                <div>We need your help: {store.sidePanelNode.role}</div>
-                <CloseIcon onClick={() => openSidePanel(null)}>x</CloseIcon>
-            </Header>
-            <p>
-                I am proud that ARIA DevTools supports over 1200 people around the
-                world in their effort to create websites accessible to everyone.
-            </p>
-            <p>
-                With proper funding it will become an indispensable tool. If your company cares about
-                web accessibility and wants to support this open-source project reach out to me at {" "}
-                <a href={"mailto:mateusz@roombelt.com"}>mateusz@roombelt.com</a>!
-            </p>
-            <p>
-                Even if you don't want to support ARIA DevTools directly you may like my other project
-                {" "}<a href="https://roombelt.com" target="_blank">Roombelt</a>.{" "}
-                Check it out and perhaps it will be a great fit for your team!
-            </p>
-        </ActionsBar>
-    );
+    // return (
+    //     <ActionsBar style={{flexBasis: currentWidth}}>
+    //         <ResizeHandler onMouseDown={onMouseDown}
+    //                        onMouseUp={dragState ? onMouseUp : undefined}
+    //                        onMouseMove={dragState ? onMouseMove : undefined}
+    //                        isActive={!!dragState}/>
+    //
+    //         <Header>
+    //             <div>We need your help: {store.sidePanelNode.role}</div>
+    //             <CloseIcon onClick={() => openSidePanel(null)}>x</CloseIcon>
+    //         </Header>
+    //         <p>
+    //             I am proud that ARIA DevTools supports over 1200 people around the
+    //             world in their effort to create websites accessible to everyone.
+    //         </p>
+    //         <p>
+    //             With proper funding it will become an indispensable tool. If your company cares about
+    //             web accessibility and wants to support this open-source project reach out to me at {" "}
+    //             <a href={"mailto:mateusz@roombelt.com"}>mateusz@roombelt.com</a>!
+    //         </p>
+    //         <p>
+    //             Even if you don't want to support ARIA DevTools directly you may like my other project
+    //             {" "}<a href="https://roombelt.com" target="_blank">Roombelt</a>.{" "}
+    //             Check it out and perhaps it will be a great fit for your team!
+    //         </p>
+    //     </ActionsBar>
+    // );
 });
 
 const Header = styled.div`

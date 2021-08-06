@@ -47,7 +47,7 @@ export const HorizontalBlockTemplate = observer(React.forwardRef(
             <HeadingWrapper isHovered={isHovered} style={style} ref={ref} color={color}>
                 <Role color={color} onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}
                       onClick={() => openSidePanel(node)}
-                      isSelected={node.isOpenInSidePanel}
+                      isSelected={node?.isOpenInSidePanel}
                 >
                     {header}
                 </Role>

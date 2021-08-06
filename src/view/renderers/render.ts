@@ -20,6 +20,7 @@ import Label from "./Label";
 import { ComponentProps } from "./utils";
 import Radio from "./Radio";
 import Checkbox from "./Checkbox";
+import Switch from "./Switch";
 import Combobox from "./Combobox";
 import Table from "./Table";
 import Dialog from "./Dialog";
@@ -49,6 +50,7 @@ const renderers: RendererMap = {
   radiogroup: List,
   radio: Radio,
   checkbox: Checkbox,
+  switch: Switch,
   article: Block,
   form: Block,
   heading: Heading,

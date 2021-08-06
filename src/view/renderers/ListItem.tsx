@@ -54,7 +54,7 @@ export default observer(function ListItem({node}: ComponentProps) {
                 onMouseOver={() => setHovered(true)}
                 onMouseOut={() => setHovered(false)}
                 onClick={() => openSidePanel(node)}
-                isSelected={node.isOpenInSidePanel}>
+                isSelected={node?.isOpenInSidePanel}>
                 {node.attributes.ariaPosInSet}.
             </Role>
             <ListItemContent>{render(trimStart(node.htmlChildren))}</ListItemContent>
