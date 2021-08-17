@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React from "react";
-import {borderRadius, ComponentProps, hoveredBoxShadow, selectedBoxShadow, useFocusable} from "./utils";
+import {borderRadius, ComponentProps, hoveredBoxShadow, IssuesBadge, selectedBoxShadow, useFocusable} from "./utils";
 import {observer} from "mobx-react";
 import {useOpenSidePanel} from "../side-panel";
 
@@ -17,6 +17,7 @@ const ImageWrapper = styled.span<{ isHovered: boolean }>`
 `;
 
 const Role = styled.span<{ isSelected: boolean }>`
+  position: relative;
   display: inline-block;
   margin-right: 3px;
   padding: 0 2px;
@@ -57,10 +58,11 @@ export default observer(function Image({node}: ComponentProps) {
             <Role
                 onMouseOver={() => setHovered(true)}
                 onMouseOut={() => setHovered(false)}
-                onClick={() => openSidePanel(node)}
+                onClick={(event) => openSidePanel(node, event)}
                 isSelected={node?.isOpenInSidePanel}
             >
                 🖼️
+                <IssuesBadge node={node} />
             </Role>
             <Content>{node.accessibleName || "<blank>"}</Content>
         </ImageWrapper>

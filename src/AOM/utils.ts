@@ -150,7 +150,8 @@ const tagsWithNullRoleMapping = [
   "u",
   "var",
   "video",
-  "wbr"
+  "wbr",
+  "address"
 ];
 
 export function hasEmptyRoleMapping(htmlTag: string) {
@@ -206,4 +207,30 @@ export function findDescendants(node: NodeElement | null | undefined, predicate:
   });
 
   return result;
+}
+
+
+// Copy from: https://github.com/Khan/tota11y/blob/30dc0fdaa597157cb458ea6d53f127d462764c53/plugins/link-text/index.js#L22
+
+export function isDescriptiveText(textContent: string) {
+  // Handle when the text is undefined or null
+  if (typeof textContent === "undefined" || textContent === null) {
+    return false;
+  }
+
+  let stopWords = [
+    "click", "tap", "go", "here", "learn", "more", "this", "page",
+    "link", "about"
+  ];
+  // Generate a regex to match each of the stopWords
+  let stopWordsRE = new RegExp(`\\b(${stopWords.join("|")})\\b`, "ig");
+
+  textContent = textContent
+      // Strip leading non-alphabetical characters
+      .replace(/[^a-zA-Z ]/g, "")
+      // Remove the stopWords
+      .replace(stopWordsRE, "");
+
+  // Return whether or not there is any text left
+  return textContent.trim() !== "";
 }

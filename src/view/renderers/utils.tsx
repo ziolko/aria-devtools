@@ -1,6 +1,8 @@
 import React from "react";
 import { AOMElement, NodeElement } from "../../AOM/types";
 import scroll from "scroll";
+import {observer} from "mobx-react";
+import styled from "styled-components";
 
 const scrollPadding = 100;
 export const borderRadius = "5px";
@@ -90,3 +92,25 @@ export function getHeader(...els: (string | undefined)[]) {
   }
   return result.join(" ");
 }
+
+export const IssuesBadge = observer(({node}: ComponentProps) => {
+  const title = `${node.issues.length} accessibility issue${node.issues.length > 1 ? "s" : ''} detected`;
+  return node.issues.length ? <IssuesBadgeDiv title={title}>!</IssuesBadgeDiv> : null;
+});
+
+const IssuesBadgeDiv = styled.div`
+  position: absolute;
+  right: -8px;
+  top: -8px;
+  background: #ab0000;
+  border: 1px solid white;
+  color: white;
+  font-weight: bold;
+  font-size: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`

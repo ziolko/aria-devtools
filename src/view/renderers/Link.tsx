@@ -1,9 +1,18 @@
 import styled from "styled-components";
 import React from "react";
-import {borderRadius, ComponentProps, hoveredBoxShadow, renderContext, selectedBoxShadow, useFocusable} from "./utils";
+import {
+    borderRadius,
+    ComponentProps,
+    hoveredBoxShadow,
+    IssuesBadge,
+    renderContext,
+    selectedBoxShadow,
+    useFocusable
+} from "./utils";
 import {observer} from "mobx-react";
 import {useOpenSidePanel} from "../side-panel";
 import {trimStart} from "../../AOM/utils";
+import {getAccessibleNameOf} from "../../AOM/types";
 
 const LinkWrapper = styled.span<{ isHovered: boolean }>`
   margin: 10px 0;
@@ -15,6 +24,7 @@ const LinkWrapper = styled.span<{ isHovered: boolean }>`
 `;
 
 const Role = styled.span<{ isSelected: boolean }>`
+  position: relative;
   margin-right: 3px;
   padding: 0 2px;
   cursor: pointer;
@@ -46,16 +56,28 @@ export default observer(function Link({node}: ComponentProps) {
     const [ref, style] = useFocusable(node);
     const openSidePanel = useOpenSidePanel();
 
+    const children = trimStart(node.children) ?? [];
+
+    function getContent() {
+        if (node.hasCustomAccessibleName) {
+            return (node.accessibleName || "<blank>")
+        }
+        const contentText = getAccessibleNameOf(children).trim();
+        return (contentText ? render(children) : node.attributes.htmlHref) ?? "<blank>";
+    }
+
     return (
         <LinkWrapper ref={ref} style={style} isHovered={isHovered}>
             <Role onMouseOver={() => setHovered(true)}
                   onMouseOut={() => setHovered(false)}
-                  onClick={() => openSidePanel(node)}
+                  onClick={(event) => openSidePanel(node, event)}
                   isSelected={node?.isOpenInSidePanel}>
                 🔗
+                <IssuesBadge node={node}/>
             </Role>
-            <LinkContent
-                onClick={() => node.domNode.click()}>{node.hasCustomAccessibleName ? node.accessibleName || "<blank>" : render(trimStart(node.htmlChildren))}</LinkContent>
+            <LinkContent onClick={(event) => !event.defaultPrevented && node.domNode.click()}>
+                {getContent()}
+            </LinkContent>
         </LinkWrapper>
     );
 });

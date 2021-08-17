@@ -62,7 +62,6 @@ export default (props: MainProps) => {
       <ComponentWithScrollBar element={props.root} id="aria-dev-tools-scroll-parent" />
       <SidePanel />
       <AriaLive />
-      <Feedback />
     </Layout>
   );
 };

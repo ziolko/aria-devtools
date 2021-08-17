@@ -129,8 +129,15 @@ export default function render(element: AOMElement | AOMElement[]): any {
     renderer = Unsupported;
   }
 
-  return React.createElement(renderer, {
+  const result = React.createElement(renderer, {
     node,
     key: node.key
   });
+
+  if(!node.beforeContent && !node.afterContent) {
+    return result;
+  }
+  // return React.createElement(React.Fragment, {
+  //   children: [node.beforeContent, result, node.afterContent].filter(x=>!!x)
+  // });
 }

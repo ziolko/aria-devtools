@@ -10,7 +10,7 @@ import {
     NodeElement,
     TextElement
 } from "../AOM/types";
-import {action, observable} from "mobx";
+import {action, computed, observable} from "mobx";
 import {getMap, reconcileFields} from "../AOM/reconcile";
 
 class RelationsForId {
@@ -37,16 +37,16 @@ export default class Store {
 
     @observable lastAlertText = new Map<AomKey, string>();
     @observable activeAlerts: Alert[] = [];
-    @observable sidePanelNode: NodeElement | null  =null
+    @observable sidePanelNode: NodeElement | null = null
 
     @action openSidePanel(node: NodeElement | null) {
-        if(this.sidePanelNode) {
+        if (this.sidePanelNode) {
             this.sidePanelNode.isOpenInSidePanel = false;
         }
 
         this.sidePanelNode = node;
 
-        if(this.sidePanelNode) {
+        if (this.sidePanelNode) {
             this.sidePanelNode.isOpenInSidePanel = true;
         }
     }
@@ -123,6 +123,12 @@ export default class Store {
         }
     }
 
+    @action updateHeadings(headings: NodeElement[]) {
+        headings.forEach((heading, index) => {
+            heading.relations.previousHeading = headings[index - 1] ?? null;
+        })
+    }
+
     register(element: AOMElement) {
         if (!element) {
             return;
@@ -137,11 +143,11 @@ export default class Store {
 
         if (element instanceof NodeElement) {
             this.updateReferenceRelations(element, null, element.attributes);
-            this.setContext(element, "formContext", "form", "input");
-            this.setContext(element, "labelContext", "label", "input", "textarea");
-            this.setContext(element, "fieldsetContext", "fieldset", "legend");
-            this.setAriaLiveContext(element);
-            this.setTableContext(element);
+            Store.setContext(element, "formContext", "form", "input");
+            Store.setContext(element, "labelContext", "label", "input", "textarea");
+            Store.setContext(element, "fieldsetContext", "fieldset", "legend");
+            Store.setAriaLiveContext(element);
+            Store.setTableContext(element);
 
             element.htmlChildren.forEach(item => item && this.register(item));
 
@@ -260,7 +266,6 @@ export default class Store {
             if (element.isFocused) {
                 this.focus(null);
             }
-        } else {
         }
 
         this.keyToAomElement.delete(element.key);
@@ -370,7 +375,7 @@ export default class Store {
         return result;
     }
 
-    private setContext(
+    private static setContext(
         node: NodeElement,
         contextName: "formContext" | "labelContext" | "fieldsetContext",
         rootTag: string,
@@ -389,7 +394,7 @@ export default class Store {
         }
     }
 
-    private setTableContext(node: NodeElement) {
+    private static setTableContext(node: NodeElement) {
         if (node.htmlTag === "table") {
             node.relations.tableContext = new HtmlTableContext(node);
         } else if (node.role === "table" || node.role === "grid") {
@@ -399,7 +404,7 @@ export default class Store {
         }
     }
 
-    private setAriaLiveContext(node: NodeElement) {
+    private static setAriaLiveContext(node: NodeElement) {
         if (node.attributes.ariaLive !== "off") {
             node.relations.ariaLiveContext = new Context(node);
         } else if (node.htmlParent) {

@@ -1,6 +1,14 @@
 import styled from "styled-components";
 import React from "react";
-import {borderRadius, ComponentProps, hoveredBoxShadow, renderContext, selectedBoxShadow, useFocusable} from "./utils";
+import {
+    borderRadius,
+    ComponentProps,
+    hoveredBoxShadow,
+    IssuesBadge,
+    renderContext,
+    selectedBoxShadow,
+    useFocusable
+} from "./utils";
 import {trimStart} from "../../AOM/utils";
 import {observer} from "mobx-react";
 import {useOpenSidePanel} from "../side-panel";
@@ -14,6 +22,7 @@ const HeadingWrapper = styled.div<{ isHovered: boolean; color: string, onClick?:
 `;
 
 const Role = styled.div<{ color: string, isSelected: boolean }>`
+  position: relative;
   display: inline-block;
   text-transform: uppercase;
   background: ${props => props.color};
@@ -46,10 +55,11 @@ export const HorizontalBlockTemplate = observer(React.forwardRef(
         return (
             <HeadingWrapper isHovered={isHovered} style={style} ref={ref} color={color}>
                 <Role color={color} onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}
-                      onClick={() => openSidePanel(node)}
+                      onClick={(event) => openSidePanel(node, event)}
                       isSelected={node?.isOpenInSidePanel}
                 >
                     {header}
+                    <IssuesBadge node={node}/>
                 </Role>
                 {children}
             </HeadingWrapper>

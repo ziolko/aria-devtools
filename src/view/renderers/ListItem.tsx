@@ -53,7 +53,7 @@ export default observer(function ListItem({node}: ComponentProps) {
             <Role
                 onMouseOver={() => setHovered(true)}
                 onMouseOut={() => setHovered(false)}
-                onClick={() => openSidePanel(node)}
+                onClick={(event) => openSidePanel(node, event)}
                 isSelected={node?.isOpenInSidePanel}>
                 {node.attributes.ariaPosInSet}.
             </Role>

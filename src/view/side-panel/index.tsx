@@ -5,6 +5,22 @@ import {observer} from "mobx-react";
 import {useStore} from "../../store-context";
 import {NodeElement} from "../../AOM/types";
 
+const roles = [
+    require("./roles/Article").default,
+    require("./roles/Banner").default,
+    require("./roles/Button").default,
+    require("./roles/ContentInfo").default,
+    require("./roles/Heading").default,
+    require("./roles/Img").default,
+    require("./roles/Link").default,
+    require("./roles/List").default,
+    require("./roles/ListItem").default,
+    require("./roles/Main").default,
+    require("./roles/Navigation").default,
+    require("./roles/Search").default,
+    require("./roles/Textbox").default
+];
+
 type ResizablePaneState = null | {
     startCursorX: number;
     currentCursorX: number;
@@ -12,7 +28,10 @@ type ResizablePaneState = null | {
 
 export function useOpenSidePanel() {
     const store = useStore();
-    return useCallback((node: NodeElement | null) => store.openSidePanel(node), [store])
+    return useCallback((node: NodeElement | null, event?: React.MouseEvent) => {
+        store.openSidePanel(node)
+        event?.preventDefault();
+    }, [store])
 }
 
 export default observer(function SidePanel() {
@@ -41,36 +60,25 @@ export default observer(function SidePanel() {
         return null;
     }
 
-    return null;
-
-    // return (
-    //     <ActionsBar style={{flexBasis: currentWidth}}>
-    //         <ResizeHandler onMouseDown={onMouseDown}
-    //                        onMouseUp={dragState ? onMouseUp : undefined}
-    //                        onMouseMove={dragState ? onMouseMove : undefined}
-    //                        isActive={!!dragState}/>
-    //
-    //         <Header>
-    //             <div>We need your help: {store.sidePanelNode.role}</div>
-    //             <CloseIcon onClick={() => openSidePanel(null)}>x</CloseIcon>
-    //         </Header>
-    //         <p>
-    //             I am proud that ARIA DevTools supports over 1200 people around the
-    //             world in their effort to create websites accessible to everyone.
-    //         </p>
-    //         <p>
-    //             With proper funding it will become an indispensable tool. If your company cares about
-    //             web accessibility and wants to support this open-source project reach out to me at {" "}
-    //             <a href={"mailto:mateusz@roombelt.com"}>mateusz@roombelt.com</a>!
-    //         </p>
-    //         <p>
-    //             Even if you don't want to support ARIA DevTools directly you may like my other project
-    //             {" "}<a href="https://roombelt.com" target="_blank">Roombelt</a>.{" "}
-    //             Check it out and perhaps it will be a great fit for your team!
-    //         </p>
-    //     </ActionsBar>
-    // );
+    return (
+        <ActionsBar style={{flexBasis: currentWidth}}>
+            <ResizeHandler onMouseDown={onMouseDown}
+                           onMouseUp={dragState ? onMouseUp : undefined}
+                           onMouseMove={dragState ? onMouseMove : undefined}
+                           isActive={!!dragState}/>
+            <Header>
+                <Title>{store.sidePanelNode.role || store.sidePanelNode.htmlTag}</Title>
+                <CloseIcon onClick={() => openSidePanel(null)}>x</CloseIcon>
+            </Header>
+            <HelpArticles>{roles.map(Component => <Component node={store.sidePanelNode}/>)}</HelpArticles>
+            <UnknownRole/>
+        </ActionsBar>
+    );
 });
+
+const Title = styled.div`
+  text-transform: capitalize;
+`;
 
 const Header = styled.div`
   justify-content: space-between;
@@ -78,7 +86,6 @@ const Header = styled.div`
   display: flex;
   font-size: 16px;
   padding: 4px 0;
-
 `
 
 const CloseIcon = styled.div`
@@ -121,6 +128,30 @@ const ActionsBar = styled.div`
     }
   }
 `;
+
+const HelpArticles = styled.div`
+;
+`
+
+const UnknownRole = styled(({className}) => {
+    return (
+        <div className={className}>
+            <p>
+                There's no documentation for this ARIA role yet.
+            </p>
+            <p>Please request support for this aria role on our <a
+                href={"https://github.com/ziolko/aria-devtools/issues"} target={"_blank"}>issue tracker</a>.
+            </p>
+        </div>
+    )
+})`
+  display: none;
+
+  ${HelpArticles}:empty + & {
+    display: block;
+  }
+`;
+
 
 function useStorage<T>(key: string, defaultValue: T): [T | undefined, (value: T) => void] {
     const [value, setValue] = useState<T>();

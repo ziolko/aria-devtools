@@ -1,5 +1,6 @@
 import {action, computed, observable} from "mobx";
 import {getNodeKey, hasEmptyRoleMapping, isFocused, isHidden, isInline, isRootLandmark} from "./utils";
+import {AriaIssues} from "./issues";
 
 export type HtmlID = string;
 export type AomKey = string;
@@ -341,6 +342,8 @@ export class AomNodeRelations {
     @observable ariaLiveContext: Context | null = null;
     @observable tableContext: HtmlTableContext | null = null;
 
+    @observable previousHeading?: NodeElement | null;
+
     @computed get labelOf(): NodeElement[] {
         const result = [...this.htmlForLabelOf, ...this.ariaLabelOf];
 
@@ -427,7 +430,7 @@ export type AriaRole =
 export class TextElement {
     readonly key: AomKey;
     readonly role: AriaRole = "text";
-    readonly domNode: HTMLElement;
+    readonly domNode: HTMLElement | null;
 
     @observable text: string;
     @observable htmlParent: NodeElement | null = null;
@@ -444,14 +447,14 @@ export class TextElement {
         return this.text;
     }
 
-    constructor(props: { key: AomKey; text: string; node: HTMLElement }) {
+    constructor(props: { key: AomKey; text: string; node: HTMLElement | null }) {
         this.key = props.key;
         this.text = props.text;
         this.domNode = props.node;
     }
 }
 
-function getAccessibleNameOf(items: AOMElement[]) {
+export function getAccessibleNameOf(items: AOMElement[]) {
     return items
         .map(item => {
             return item && (item instanceof TextElement ? item.text : item.accessibleName);
@@ -977,6 +980,7 @@ export class NodeElement {
 
     readonly attributes: Aria = new Aria(this);
     readonly relations = new AomNodeRelations(this);
+    readonly issuesObj = new AriaIssues(this);
 
     get id() {
         return this.attributes.id;
@@ -984,6 +988,10 @@ export class NodeElement {
 
     get role() {
         return this.attributes.role;
+    }
+
+    get issues() {
+        return this.issuesObj.issues;
     }
 
     getRawAttributes() {
@@ -1022,6 +1030,7 @@ export class NodeElement {
     }
 
     @computed get children() {
+        const before = new TextElement({key: this.key + '::before', text: this.beforeContent, node: null})
         return [...this.htmlChildren, ...this.relations.ariaOwns].filter(x => x.ariaParent === this);
     }
 
@@ -1087,13 +1096,12 @@ export class NodeElement {
                 return children;
             }
 
-            if (this.attributes.htmlSrc != null) {
-                return this.attributes.htmlSrc;
-            }
-
-            if (this.attributes.htmlHref != null) {
-                return this.attributes.htmlHref;
-            }
+            // if (this.attributes.htmlSrc != null) {
+            //     return this.attributes.htmlSrc;
+            // }
+            // if (this.attributes.htmlHref != null) {
+            //     return this.attributes.htmlHref;
+            // }
 
             return "";
         } finally {
