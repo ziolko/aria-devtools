@@ -5,9 +5,17 @@ import { observer } from "mobx-react";
 
 export default observer(function List({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
-  const listItems = node.htmlChildren.filter(x => x?.role === "listitem");
+  function countListItems(total: number, node: any) {
+      if (node?.role === "listitem") {
+        return total + 1;
+      } else if (node?.role === "group") {
+        return total + node.htmlChildren?.reduce(countListItems, 0);
+      }
+      return total;
+  }
+  const listItemCount = node.htmlChildren.reduce(countListItems, 0);
 
-  const length = `${listItems.length} item${listItems.length === 1 ? "" : "s"}`;
+  const length = `${listItemCount} item${listItemCount === 1 ? "" : "s"}`;
 
   const header = node.hasCustomAccessibleName
     ? `${node.accessibleName} - ${length}`
