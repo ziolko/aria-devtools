@@ -5,15 +5,15 @@ import { observer } from "mobx-react";
 
 export default observer(function List({ node }: ComponentProps) {
   const render = React.useContext(renderContext);
-  function recurseForListItems(total: number, node: any) {
+  function countListItems(total: number, node: any) {
       if (node?.role === "listitem") {
         return total + 1;
       } else if (node?.role === "group") {
-        return total + node.htmlChildren?.reduce(recurseForListItems, 0);
+        return total + node.htmlChildren?.reduce(countListItems, 0);
       }
       return total;
   }
-  const listItemCount = node.htmlChildren.reduce(recurseForListItems, 0);
+  const listItemCount = node.htmlChildren.reduce(countListItems, 0);
 
   const length = `${listItemCount} item${listItemCount === 1 ? "" : "s"}`;
 
