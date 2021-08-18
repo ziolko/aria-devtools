@@ -15,7 +15,7 @@ export default observer(function List({ node }: ComponentProps) {
   }
   const listItemCount = node.htmlChildren.reduce(recurseForListItems, 0);
 
-  const length = `${listItemCount} item${listItemCount  === 1 ? "" : "s"}`;
+  const length = `${listItemCount} item${listItemCount === 1 ? "" : "s"}`;
 
   const header = node.hasCustomAccessibleName
     ? `${node.accessibleName} - ${length}`
