@@ -51,7 +51,9 @@ export default function traverse(htmlNode: Node, traversedNodes = new Map<Node, 
     const before = getComputedStyle(node, ':before').getPropertyValue('content');
     const after = getComputedStyle(node, ':after').getPropertyValue('content');
 
-    if (before !== "none") {
+    // TODO: support complex before/after content e.g counter(listing)
+
+    if (before[0] === '"' && before[before.length - 1] === '"') {
         const textElement = new TextElement({
             key: result.key + "::before",
             text: before.slice(1, -1),
@@ -61,7 +63,7 @@ export default function traverse(htmlNode: Node, traversedNodes = new Map<Node, 
         result.htmlChildren.unshift(textElement);
     }
 
-    if (after !== "none") {
+    if (after[0] === '"' && after[before.length - 1] === '"') {
         const textElement = new TextElement({
             key: result.key + "::after",
             text: after.slice(1, -1),
