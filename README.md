@@ -19,6 +19,7 @@ I highly appreciate all pull requests and raised issues. You can also help by sh
 
 [![](https://github.com/ziolko.png?size=60)](https://github.com/ziolko)
 [![](https://github.com/pcorpet.png?size=60)](https://github.com/pcorpet)
+[![](https://github.com/ctemplin.png?size=60)](https://github.com/ctemplin) 
 
 ## Working with this repository
 
