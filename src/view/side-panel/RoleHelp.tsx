@@ -17,7 +17,7 @@ export default observer(function Article({role, node, children, mdnLink}: Articl
 
     return <>
         {children}
-        <p><a href={mdnLink} target="_blank">Learn more on MDN</a></p>
+        <p><a href={mdnLink} target="_blank">Source: MDN</a></p>
         <Issues node={node}/>
     </>
 });

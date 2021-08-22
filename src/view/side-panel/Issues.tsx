@@ -14,6 +14,11 @@ export default observer(function Issues({node}: { node: NodeElement }) {
             <ul>
                 {node.issues.map((issue, i) => <li key={i}>{issue.summary}</li>)}
             </ul>
+            <em>
+                Note: Roles description and accessibility issues detection are currently in beta. Please share your
+                feedback and suggestions in our{" "}
+                <a href={"https://github.com/ziolko/aria-devtools/issues"} target={"_blank"}>issue tracker</a>.
+            </em>
         </IssuesSection>
     );
 });

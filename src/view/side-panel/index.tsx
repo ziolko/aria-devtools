@@ -139,8 +139,9 @@ const UnknownRole = styled(({className}) => {
             <p>
                 There's no documentation for this ARIA role yet.
             </p>
-            <p>Please request support for this aria role on our <a
-                href={"https://github.com/ziolko/aria-devtools/issues"} target={"_blank"}>issue tracker</a>.
+            <p>
+                Please request support for this aria role on our
+                <a href={"https://github.com/ziolko/aria-devtools/issues"} target={"_blank"}>issue tracker</a>.
             </p>
         </div>
     )

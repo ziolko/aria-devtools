@@ -41,7 +41,6 @@ export class AriaIssues {
         check("link", () => !node.accessibleName.trim(), "Link accessible name is empty")
         check("link", () => !!node.accessibleName.trim() && !isDescriptiveText(node.accessibleName), "Link accessible name is unclear")
 
-
         return result;
     }
 }
