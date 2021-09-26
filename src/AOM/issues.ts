@@ -16,6 +16,8 @@ export class AriaIssues {
     }
 
     @computed get issues(): AriaIssue[] {
+        return [];
+
         const node = this.node;
         const attrs = this.node.attributes;
         const relations = this.node.relations;
