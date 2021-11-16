@@ -409,6 +409,7 @@ export type AriaRole =
     | "row"
     | "rowgroup"
     | "search"
+    | "separator"
     | "switch"
     | "tab"
     | "table"
@@ -633,7 +634,7 @@ export class Aria {
                 return null;
             }
 
-            const listItems = parent.htmlChildren.filter(item => item instanceof NodeElement && item.htmlTag === "li");
+            const listItems = parent.htmlChildren.filter(item => item instanceof NodeElement && item.htmlTag === "li" && item.getRawAttributes().role !== "separator");
 
             return {
                 role: "listitem",

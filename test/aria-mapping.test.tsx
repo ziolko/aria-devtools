@@ -1,6 +1,6 @@
 import * as React from "react";
 import { expect } from "chai";
-import sandbox, { delay } from "./sandbox";
+import sandbox from "./sandbox";
 import { NodeElement } from "../src/AOM/types";
 
 describe("HTML-ARIA mappings", () => {
@@ -179,6 +179,26 @@ describe("HTML-ARIA mappings", () => {
       expect(item.attributes.ariaPosInSet, "posinset").to.be.equal(i);
     }
   });
+
+  it("Should skip separators on a list", () => {
+    const {AOM} = sandbox(
+      <ul className="dropdown-menu">
+        <li id="li-1"><a href="#">My cart</a></li>
+        <li id="li-2"><a href="#">My orders</a></li>
+        <li id="li-3"><a href="#">My details</a></li>
+        <li role="separator"/>
+        <li id="li-4"><a href="#">Log out</a></li>
+      </ul>
+    );
+
+    for (let i = 1; i <= 3; i++) {
+      const item = AOM[`li-${i}`];
+      expect(item.role, "role").to.be.equal("listitem");
+      expect(item.attributes.ariaSetSize, "setsize").to.be.equal(4);
+      expect(item.attributes.ariaPosInSet, "posinset").to.be.equal(i);
+    }
+  })
+
 
   it("Should map IMG without alt as img role", () => {
     const { AOM } = sandbox(<img id="result" />);
