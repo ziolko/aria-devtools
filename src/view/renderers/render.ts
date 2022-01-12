@@ -25,6 +25,7 @@ import Combobox from "./Combobox";
 import Table from "./Table";
 import Dialog from "./Dialog";
 import MenuItem from "./MenuItem";
+import RadioGroup from "./RadioGroup";
 import Tab from "./Tab";
 import TabPanel from "./TabPanel";
 
@@ -47,7 +48,7 @@ const renderers: RendererMap = {
   contentinfo: Block,
   complementary: Block,
   group: Block,
-  radiogroup: List,
+  radiogroup: RadioGroup,
   radio: Radio,
   checkbox: Checkbox,
   switch: Switch,
