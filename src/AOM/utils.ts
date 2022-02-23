@@ -45,7 +45,7 @@ export function trimStart(el: AOMElement[]) {
     const isText = el[i]!.role === "text";
     const textElement = el[i] as TextElement;
 
-    if (isText && textElement.text.trimStart() !== "") {
+    if (isText && textElement.text?.trimStart() !== "") {
       const trimmedTextElement = new TextElement({
         node: textElement.domNode,
         key: textElement.key,

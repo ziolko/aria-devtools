@@ -106,7 +106,7 @@ export default function render(element: AOMElement | AOMElement[]): any {
 
   if (element.role === "text") {
     const textNode = element as TextElement;
-    return textNode.text.trim() ? React.createElement(Text, { node: textNode, key: textNode.key }) : textNode.text;
+    return textNode.text?.trim() ? React.createElement(Text, { node: textNode, key: textNode.key }) : textNode.text;
   }
 
   const node = element as NodeElement;
