@@ -89,7 +89,10 @@ const renderers: RendererMap = {
   menuitem: MenuItem,
   option: Option,
   tab: Tab,
-  tabpanel: TabPanel
+  tabpanel: TabPanel,
+  log: Block,
+  marquee: Block,
+  timer: Block,
 };
 
 const htmlTagRenderers: RendererMap = {
