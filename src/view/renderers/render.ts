@@ -7,7 +7,6 @@ import Link from "./Link";
 import Button from "./Button";
 import TextBox from "./TextBox";
 import Paragraph from "./Paragraph";
-import Unsupported from "./Unsupported";
 import List from "./List";
 import ListItem from "./ListItem";
 import Separator from "./Separator";
@@ -28,6 +27,7 @@ import MenuItem from "./MenuItem";
 import RadioGroup from "./RadioGroup";
 import Tab from "./Tab";
 import TabPanel from "./TabPanel";
+import Invalid from "./Invalid";
 
 type RendererMap = { [key in string]: React.FunctionComponent<ComponentProps> };
 
@@ -65,7 +65,7 @@ const renderers: RendererMap = {
   figure: Block,
   feed: Block,
   paragraph: Paragraph,
-  default: Unsupported,
+  default: Invalid,
   list: List,
   listitem: ListItem,
   separator: Separator,
@@ -105,7 +105,7 @@ export default function render(element: AOMElement | AOMElement[]): any {
     return null;
   }
 
-  if (element.role === "text") {
+  if (element.role === "aria-devtools-text") {
     const textNode = element as TextElement;
     return textNode.text.trim() ? React.createElement(Text, { node: textNode, key: textNode.key }) : textNode.text;
   }
@@ -127,7 +127,7 @@ export default function render(element: AOMElement | AOMElement[]): any {
   } else if (renderers.hasOwnProperty(node.role)) {
     renderer = renderers[node.role];
   } else {
-    renderer = Unsupported;
+    renderer = Invalid;
   }
 
   const result = React.createElement(renderer, {
@@ -138,7 +138,8 @@ export default function render(element: AOMElement | AOMElement[]): any {
   if(!node.beforeContent && !node.afterContent) {
     return result;
   }
-  // return React.createElement(React.Fragment, {
-  //   children: [node.beforeContent, result, node.afterContent].filter(x=>!!x)
-  // });
+
+  return React.createElement(React.Fragment, {
+    children: [node.beforeContent, result, node.afterContent].filter(x=>!!x)
+  });
 }

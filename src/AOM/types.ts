@@ -421,6 +421,7 @@ export type AriaRole =
     | "rowheader"
     | "cell"
     | "gridcell"
+    | "aria-devtools-text"
     | "text"
     | "option"
     | "none"
@@ -430,7 +431,7 @@ export type AriaRole =
 
 export class TextElement {
     readonly key: AomKey;
-    readonly role: AriaRole = "text";
+    readonly role: AriaRole = "aria-devtools-text";
     readonly domNode: HTMLElement | null;
 
     @observable text: string;

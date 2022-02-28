@@ -42,7 +42,7 @@ export function trimStart(el: AOMElement[]) {
   const result: AOMElement[] = [];
 
   for (let i = 0; i < el.length; i++) {
-    const isText = el[i]!.role === "text";
+    const isText = el[i]!.role === "aria-devtools-text";
     const textElement = el[i] as TextElement;
 
     if (isText && textElement.text.trimStart() !== "") {
