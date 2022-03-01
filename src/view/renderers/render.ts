@@ -93,6 +93,7 @@ const renderers: RendererMap = {
   log: Block,
   marquee: Block,
   timer: Block,
+  spinbutton: TextBox,
 };
 
 const htmlTagRenderers: RendererMap = {

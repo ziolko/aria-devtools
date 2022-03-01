@@ -50,6 +50,17 @@ export default observer(function TextBox({ node }: ComponentProps) {
     value = "*".repeat(value?.length ?? 0);
   }
 
+  let spinButtonRange = "";
+  if(node.role === "spinbutton") {
+      value = node.attributes.ariaValueText || node.attributes.ariaValueNow?.toString()
+      const parts = [
+          node.attributes.ariaValueMin != null && `min: ${node.attributes.ariaValueMin}`,
+          node.attributes.ariaValueMax != null && `max: ${node.attributes.ariaValueMax}`
+      ].filter(Boolean)
+
+      if(parts.length > 0) spinButtonRange = `(${parts.join(', ')})`;
+  }
+
   return (
     <HorizontalBlockTemplate header={node.role ?? `<${node.htmlTag}>`} ref={ref} node={node}>
       {node.hasCustomAccessibleName && (
@@ -57,6 +68,7 @@ export default observer(function TextBox({ node }: ComponentProps) {
           <HeaderPart>{node.accessibleName}</HeaderPart>{" "}
         </>
       )}
+        {spinButtonRange}
       <HeaderPart>
         {node.attributes.ariaRequired && "⭐"} <ValidityIcon invalid={!!node.attributes.ariaInvalid} />
       </HeaderPart>

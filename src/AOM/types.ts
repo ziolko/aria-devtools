@@ -427,6 +427,7 @@ export type AriaRole =
     | "none"
     | "presentation"
     | "radio"
+    | "spinbutton"
     | null;
 
 export class TextElement {
@@ -481,6 +482,8 @@ export class RawNodeAttributes {
     @observable multiple?: string = undefined;
     @observable size?: string = undefined;
     @observable scope?: string = undefined;
+    @observable min?: string = undefined;
+    @observable max?: string = undefined;
 
     @observable "aria-activedescendant"?: HtmlID = undefined;
     @observable "aria-atomic"?: boolean = undefined;
@@ -522,7 +525,7 @@ function asNumber(value: string | number | null | undefined): number | undefined
         case "number":
             return value;
         case "string":
-            return parseInt(value);
+            return value ? parseInt(value) : undefined;
         default:
             return undefined;
     }
@@ -699,6 +702,15 @@ export class Aria {
 
             if (type === "submit") {
                 return {role: "button"};
+            }
+
+            if (type === "number") {
+                return {
+                    role: "spinbutton",
+                    ariaValueMin: this.rawAttributes.min,
+                    ariaValueMax: this.rawAttributes.max,
+                    ariaValueNow: this.htmlValue
+                };
             }
 
             return {role: "textbox"};
@@ -879,6 +891,22 @@ export class Aria {
 
     @computed get ariaPosInSet(): number | undefined {
         return asNumber(this.rawAttributes["aria-posinset"]?.trim() ?? this.mappedAttributes?.ariaPosInSet);
+    }
+
+    @computed get ariaValueMin(): number | undefined {
+        return asNumber(this.rawAttributes["aria-valuemin"]?.trim() ?? this.mappedAttributes?.ariaValueMin);
+    }
+
+    @computed get ariaValueMax(): number | undefined {
+        return asNumber(this.rawAttributes["aria-valuemax"]?.trim() ?? this.mappedAttributes?.ariaValueMax);
+    }
+
+    @computed get ariaValueNow(): number | undefined {
+        return asNumber(this.rawAttributes["aria-valuenow"]?.trim() ?? this.mappedAttributes?.ariaValueNow);
+    }
+
+    @computed get ariaValueText(): string | undefined {
+        return this.rawAttributes["aria-valuetext"]?.trim();
     }
 
     @computed get ariaDisabled() {
