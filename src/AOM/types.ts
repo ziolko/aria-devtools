@@ -1060,16 +1060,17 @@ export class NodeElement {
     }
 
     @computed get children() {
-        const before = new TextElement({key: this.key + '::before', text: this.beforeContent, node: null})
+        // const before = new TextElement({key: this.key + '::before', text: this.beforeContent, node: null})
         return [...this.htmlChildren, ...this.relations.ariaOwns].filter(x => x.ariaParent === this);
     }
 
     @computed get hasCustomAccessibleName(): boolean {
+        const isPresentation = this.role === "none" || this.role === "presentation";
         return (
             !!this.relations.labelledBy.length ||
             this.attributes.ariaLabel != null ||
-            (this.htmlTag === "img" && this.role !== "presentation" && this.attributes.htmlAlt != null) ||
-            (this.htmlTag === "img" && this.role !== "presentation" && this.attributes.htmlTitle != null) ||
+            (this.htmlTag === "img" && !isPresentation && this.attributes.htmlAlt != null) ||
+            (!isPresentation && !!this.attributes.htmlTitle) ||
             this.attributes.htmlPlaceholder != null
         );
     }
@@ -1101,16 +1102,16 @@ export class NodeElement {
                 return getAccessibleNameOf(this.relations.labelledBy).trim();
             }
 
-            if (this.htmlTag === "img" && this.role !== "presentation" && this.attributes.htmlAlt != null) {
+            const isPresentation = this.role === "none" || this.role === "presentation";
+            if (this.htmlTag === "img" && !isPresentation && this.attributes.htmlAlt != null) {
                 return this.attributes.htmlAlt;
             }
-            if (this.htmlTag === "img" && this.role !== "presentation" && this.attributes.htmlTitle != null) {
+            if (!isPresentation && !!this.attributes.htmlTitle) {
                 return this.attributes.htmlTitle;
             }
             if (this.attributes.htmlPlaceholder != null) {
                 return this.attributes.htmlPlaceholder;
             }
-
             if (
                 this.htmlTag === "input" &&
                 this.attributes.htmlType &&
