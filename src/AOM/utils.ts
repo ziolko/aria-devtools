@@ -18,7 +18,7 @@ export function isFocused(el: HTMLElement) {
 
 export function isInline(el: HTMLElement) {
   const { display } = window.getComputedStyle(el);
-  return display === "inline";
+  return display === "inline" || display === "inline-block" || display === "inline-flex";
 }
 
 const nodeKeys = new WeakMap<Node, string>();

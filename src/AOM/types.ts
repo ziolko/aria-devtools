@@ -1059,6 +1059,15 @@ export class NodeElement {
         return this.relations.ariaOwnedBy.length > 0 ? this.relations.ariaOwnedBy[0] : this.htmlParent;
     }
 
+    @computed get isFirstChild() {
+        return this.ariaParent?.children[0] === this;
+    }
+
+    @computed get isLastChild() {
+        const siblings = this.ariaParent?.children;
+        return siblings?.[siblings?.length - 1] === this;
+    }
+
     @computed get children() {
         // const before = new TextElement({key: this.key + '::before', text: this.beforeContent, node: null})
         return [...this.htmlChildren, ...this.relations.ariaOwns].filter(x => x.ariaParent === this);
@@ -1068,7 +1077,7 @@ export class NodeElement {
         const isPresentation = this.role === "none" || this.role === "presentation";
         return (
             !!this.relations.labelledBy.length ||
-            this.attributes.ariaLabel != null ||
+            !!this.attributes.ariaLabel?.trim() ||
             (this.htmlTag === "img" && !isPresentation && this.attributes.htmlAlt != null) ||
             (!isPresentation && !!this.attributes.htmlTitle) ||
             this.attributes.htmlPlaceholder != null
@@ -1094,8 +1103,8 @@ export class NodeElement {
                 return getAccessibleNameOf(this.relations.ariaLabelledBy).trim();
             }
 
-            if (this.attributes.ariaLabel != null) {
-                return this.attributes.ariaLabel;
+            if (this.attributes.ariaLabel?.trim()) {
+                return this.attributes.ariaLabel.trim();
             }
 
             if (this.relations.labelledBy.length) {

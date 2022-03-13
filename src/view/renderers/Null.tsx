@@ -93,9 +93,9 @@ export default observer(function Null({node}: ComponentProps) {
     return (
         <div data-key={node.key} data-html-tag={node.htmlTag} style={{display: "contents"}}>
             {node.htmlTag === "label" && <NewLine/>}
-            {!node.isInline && " "}
+            {!node.isInline && !node.isFirstChild && " "}
             {content}
-            {!node.isInline && " "}
+            {!node.isInline && !node.isLastChild && " "}
         </div>
     );
 });
