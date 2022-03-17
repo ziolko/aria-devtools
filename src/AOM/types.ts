@@ -499,6 +499,7 @@ export class RawNodeAttributes {
     @observable "aria-labelledby"?: HtmlID = undefined;
     @observable "aria-level"?: string = undefined;
     @observable "aria-live"?: "off" | "polite" | "assertive" = undefined;
+    @observable "aria-pressed"?: "false" | "true" = undefined;
     @observable "aria-multiline"?: boolean = undefined;
     @observable "aria-multiselectable"?: string = undefined;
     @observable "aria-selected"?: string = undefined;
@@ -871,6 +872,10 @@ export class Aria {
 
     @computed get ariaSelected() {
         return asBoolean(this.rawAttributes["aria-selected"]);
+    }
+
+    @computed get ariaPressed(): boolean {
+        return asBoolean(this.rawAttributes["aria-pressed"]);
     }
 
     @computed get ariaModal() {
