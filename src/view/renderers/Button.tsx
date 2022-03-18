@@ -8,7 +8,7 @@ import {useOpenSidePanel} from "../side-panel";
 
 const color = "#aaa";
 
-const SimpleButtonWrapper = styled.span<{ isHovered: boolean; isDisabled: boolean }>`
+const SimpleButtonWrapper = styled.span<{ isHovered: boolean; isDisabled: boolean; isPressed: boolean }>`
   --block-display: inline-block;
   margin: 10px 0;
   border-radius: ${borderRadius};
@@ -16,6 +16,7 @@ const SimpleButtonWrapper = styled.span<{ isHovered: boolean; isDisabled: boolea
 
   ${props => props.isHovered && `background: ${color}`};
   ${props => props.isDisabled && `color: #777`};
+  ${props => props.isPressed && `border: inset`};
 `;
 
 const SimpleButtonRole = styled.span<{isSelected:boolean}>`
@@ -61,6 +62,7 @@ const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
       style={style}
       isHovered={isHovered}
       isDisabled={!!node.attributes.disabled}
+      isPressed={!!node.attributes.ariaPressed}
       onClick={(event) => {
         if(!roleRef.current?.isEqualNode(event.target as any)) {
             node.domNode.click()
