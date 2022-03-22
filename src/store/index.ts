@@ -15,6 +15,7 @@ import {getMap, reconcileFields} from "../AOM/reconcile";
 
 class RelationsForId {
     @observable elementsWithId: NonNullable<NodeElement>[] = [];
+    @observable ariaDescriptions: NonNullable<NodeElement>[] = [];
     @observable ariaLabelOf: NonNullable<NodeElement>[] = [];
     @observable ariaControlledBy: NonNullable<NodeElement>[] = [];
     @observable ariaOwnedBy: NonNullable<NodeElement>[] = [];
@@ -297,6 +298,14 @@ export default class Store {
                 node.relations.htmlForLabelledBy = rel.htmlLabel;
             }
         }
+
+        this.updateSingleReferenceRelation(
+            node,
+            oldAttributes?.ariaDescribedBy,
+            newAttributes?.ariaDescribedBy,
+            "ariaDescribedBy",
+            "ariaDescriptions"
+        );
 
         this.updateSingleReferenceRelation(
             node,

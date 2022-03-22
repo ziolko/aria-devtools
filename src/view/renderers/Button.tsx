@@ -35,12 +35,13 @@ const SimpleButtonRole = styled.span<{isSelected:boolean}>`
   ${props => props.isSelected && selectedBoxShadow};
 `;
 
-const SimpleButtonContent = styled.span<{ isHovered: boolean }>`
+const SimpleButtonContent = styled.span<{ hasDescription: boolean, isHovered: boolean }>`
   display: inline-block;
   padding: 0 5px;
   background: transparent;
   min-width: 100px;
   cursor: pointer;
+  line-height: 1.33;
 
   border-radius: 0 ${borderRadius} ${borderRadius} 0;
   border: ${props => (props.isHovered ? `1px solid ${color}` : ` 1px dashed #555`)};
@@ -48,9 +49,15 @@ const SimpleButtonContent = styled.span<{ isHovered: boolean }>`
   :hover {
     background: #555;
   }
+
+  ${props => props.hasDescription && `::after { content: "🛈" }`};
+`;
+
+const SimpleButtonDescription = styled.span<{}>`
 `;
 
 const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
+  const description = node.description
   const [isHovered, setHovered] = React.useState(false);
   const [ref, style] = useFocusable(node);
   const roleRef = useRef<HTMLSpanElement>(null);
@@ -76,7 +83,10 @@ const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
                         isSelected={node?.isOpenInSidePanel}>
         🖱️
       </SimpleButtonRole>
-      <SimpleButtonContent isHovered={isHovered}>{node.accessibleName}&nbsp;</SimpleButtonContent>
+      <SimpleButtonContent
+        isHovered={isHovered} title={description} hasDescription={!!description && !node.isFocused}>
+        {node.accessibleName}&nbsp;{node.isFocused && description && `- ${description}`}
+      </SimpleButtonContent>
     </SimpleButtonWrapper>
   );
 });
