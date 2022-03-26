@@ -5,35 +5,6 @@ import {observer} from "mobx-react";
 import {useStore} from "../../store-context";
 import {NodeElement} from "../../AOM/types";
 
-const roles = [
-    require("./roles/Article").default,
-    require("./roles/Banner").default,
-    require("./roles/Button").default,
-    require("./roles/ContentInfo").default,
-    require("./roles/Heading").default,
-    require("./roles/Img").default,
-    require("./roles/Link").default,
-    require("./roles/List").default,
-    require("./roles/ListItem").default,
-    require("./roles/Main").default,
-    require("./roles/Navigation").default,
-    require("./roles/Search").default,
-    require("./roles/Textbox").default
-];
-
-type ResizablePaneState = null | {
-    startCursorX: number;
-    currentCursorX: number;
-}
-
-export function useOpenSidePanel() {
-    const store = useStore();
-    return useCallback((node: NodeElement | null, event?: React.MouseEvent) => {
-        store.openSidePanel(node)
-        event?.preventDefault();
-    }, [store])
-}
-
 export default observer(function SidePanel() {
     const [isOpen, setOpen] = useStorage<boolean>("side-panel-github-visible-1", true);
 
