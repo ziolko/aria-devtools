@@ -1,6 +1,13 @@
 import styled from "styled-components";
 import React, {useRef} from "react";
-import {borderRadius, hoveredBoxShadow, renderContext, selectedBoxShadow, useFocusable} from "./utils";
+import {
+  borderRadius,
+  hoveredBoxShadow,
+  renderContext,
+  selectedBoxShadow,
+  useFocusable,
+  useClick,
+} from "./utils";
 import { ComponentProps } from "./utils";
 import { observer } from "mobx-react";
 import { BlockTemplate } from "./Block";
@@ -55,6 +62,7 @@ const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
   const [ref, style] = useFocusable(node);
   const roleRef = useRef<HTMLSpanElement>(null);
   const openSidePanel = useOpenSidePanel();
+  const onClick = useClick(node);
 
   return (
     <SimpleButtonWrapper
@@ -65,7 +73,7 @@ const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
       isPressed={!!node.attributes.ariaPressed}
       onClick={(event) => {
         if(!roleRef.current?.isEqualNode(event.target as any)) {
-            node.domNode.click()
+            onClick(event)
         }
       }}
     >

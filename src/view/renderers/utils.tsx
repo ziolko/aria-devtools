@@ -55,6 +55,16 @@ export function useFocusable(node: NonNullable<NodeElement>): [React.Ref<any>, o
   return [ref, style];
 }
 
+export function useClick(node: NonNullable<NodeElement>): (event: React.MouseEvent) => void {
+  return React.useCallback((event) => {
+      if (event.defaultPrevented) {
+          return;
+      }
+      node.domNode.focus();
+      node.domNode.click();
+  }, [node]);
+}
+
 export function scrollToElement(element: Element) {
   const scrollParent = element.getRootNode()?.getElementById("aria-dev-tools-scroll-parent");
   if (!scrollParent) {

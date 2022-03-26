@@ -7,6 +7,7 @@ import {
     IssuesBadge,
     renderContext,
     selectedBoxShadow,
+    useClick,
     useFocusable
 } from "./utils";
 import {observer} from "mobx-react";
@@ -54,6 +55,7 @@ export default observer(function Link({node}: ComponentProps) {
     const render = React.useContext(renderContext);
     const [isHovered, setHovered] = React.useState(false);
     const [ref, style] = useFocusable(node);
+    const onClick = useClick(node);
     const openSidePanel = useOpenSidePanel();
 
     const children = trimStart(node.children) ?? [];
@@ -75,7 +77,7 @@ export default observer(function Link({node}: ComponentProps) {
                 🔗
                 <IssuesBadge node={node}/>
             </Role>
-            <LinkContent onClick={(event) => !event.defaultPrevented && node.domNode.click()}>
+            <LinkContent onClick={onClick}>
                 {getContent()}
             </LinkContent>
         </LinkWrapper>

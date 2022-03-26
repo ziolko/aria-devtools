@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import React from "react";
-import { borderRadius, useFocusable } from "./utils";
+import { borderRadius, useClick, useFocusable } from "./utils";
 import { ComponentProps } from "./utils";
 import { observer } from "mobx-react";
 
@@ -43,9 +43,14 @@ const RadioLabel = styled.span`
 export default observer(function Checkbox({ node }: ComponentProps) {
   const [isHovered, setHovered] = React.useState(false);
   const [ref, style] = useFocusable(node);
+  const onClick = useClick(node);
 
   return (
-    <CheckboxWrapper isHovered={isHovered} ref={ref} style={style}>
+    <CheckboxWrapper
+      isHovered={isHovered}
+      ref={ref}
+      style={style}
+      onClick={onClick}>
       <CheckboxIcon
         onMouseOver={() => setHovered(true)}
         onMouseOut={() => setHovered(false)}
