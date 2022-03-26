@@ -491,6 +491,7 @@ export class RawNodeAttributes {
     @observable "aria-controls"?: HtmlID = undefined;
     @observable "aria-disabled"?: string = undefined;
     @observable "aria-modal"?: string = undefined;
+    @observable "aria-description"?: string = undefined;
     @observable "aria-describedby"?: HtmlID = undefined;
     @observable "aria-haspopup"?: string = undefined;
     @observable "aria-expanded"?: string = undefined;
@@ -838,6 +839,14 @@ export class Aria {
         return this.rawAttributes["aria-controls"]?.trim();
     }
 
+    @computed get ariaDescription() {
+        return this.rawAttributes["aria-description"]?.trim();
+    }
+
+    @computed get ariaDescribedBy() {
+        return this.rawAttributes["aria-describedby"]?.trim();
+    }
+
     @computed get ariaLabel() {
         return this.rawAttributes["aria-label"]?.trim();
     }
@@ -1152,6 +1161,18 @@ export class NodeElement {
         } finally {
             this.isComputingAccessibleName = false;
         }
+    }
+
+    get description(): string {
+        if (this.relations.ariaDescribedBy?.length) {
+            return getAccessibleNameOf(this.relations.ariaDescribedBy).trim();
+        }
+
+        if (this.attributes.ariaDescription?.trim()) {
+            return this.attributes.ariaDescription.trim();
+        }
+
+        return "";
     }
 
     constructor(node: HTMLElement) {
