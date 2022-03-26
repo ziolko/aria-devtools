@@ -11,7 +11,6 @@ import {
 import { ComponentProps } from "./utils";
 import { observer } from "mobx-react";
 import { BlockTemplate } from "./Block";
-import {useOpenSidePanel} from "../side-panel";
 
 const color = "#aaa";
 
@@ -28,7 +27,6 @@ const SimpleButtonWrapper = styled.span<{ isHovered: boolean; isDisabled: boolea
 
 const SimpleButtonRole = styled.span<{isSelected:boolean}>`
   padding: 0 2px;
-  cursor: pointer;
   background: ${color};
   line-height: 14px;
   border-radius: ${borderRadius} 0 0 ${borderRadius};
@@ -61,7 +59,6 @@ const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
   const [isHovered, setHovered] = React.useState(false);
   const [ref, style] = useFocusable(node);
   const roleRef = useRef<HTMLSpanElement>(null);
-  const openSidePanel = useOpenSidePanel();
   const onClick = useClick(node);
 
   return (
@@ -80,7 +77,6 @@ const SimpleButton = observer(function SimpleButton({ node }: ComponentProps) {
       <SimpleButtonRole ref={roleRef}
                         onMouseOver={() => setHovered(true)}
                         onMouseOut={() => setHovered(false)}
-                        onClick={(event) => openSidePanel(node, event)}
                         isSelected={node?.isOpenInSidePanel}>
         🖱️
       </SimpleButtonRole>

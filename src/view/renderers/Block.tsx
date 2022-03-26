@@ -2,7 +2,6 @@ import styled, {css} from "styled-components";
 import React from "react";
 import {borderRadius, ComponentProps, hoveredBoxShadow, renderContext, selectedBoxShadow, useFocusable} from "./utils";
 import {observer} from "mobx-react";
-import {useOpenSidePanel} from "../side-panel";
 import {NodeElement} from "../../AOM/types";
 
 const BlockWrapper = styled.div<{
@@ -56,7 +55,6 @@ const BlockRole = styled.div<{ color: string; isSelected: boolean }>`
   text-transform: uppercase;
   border-radius: ${borderRadius};
   word-break: keep-all;
-  cursor: pointer;
 `;
 
 const BlockRoleContent = styled.span`
@@ -114,7 +112,6 @@ export const BlockTemplate = observer(React.forwardRef(function BlockTemplate(
 ) {
     color = color ?? "#333377";
 
-    const openSidePanel = useOpenSidePanel();
     const [isHovered, setHovered] = React.useState(false);
 
     return (
@@ -122,10 +119,8 @@ export const BlockTemplate = observer(React.forwardRef(function BlockTemplate(
                       isHovered={isHovered} background={background}>
             <BlockMeta onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)} isSelected={node?.isOpenInSidePanel}>
                 <BlockRoleBorder isSelected={node?.isOpenInSidePanel} />
-                {header && <BlockHeader color={color} onClick={(e) => openSidePanel(node, e)}
-                                        isSelected={node?.isOpenInSidePanel}>{header}</BlockHeader>}
-                <BlockRole color={color} onClick={(e) => openSidePanel(node, e)}
-                           isSelected={node?.isOpenInSidePanel}>
+                {header && <BlockHeader color={color} isSelected={node?.isOpenInSidePanel}>{header}</BlockHeader>}
+                <BlockRole color={color} isSelected={node?.isOpenInSidePanel}>
                     <BlockRoleContent>{role}</BlockRoleContent>
                 </BlockRole>
             </BlockMeta>

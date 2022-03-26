@@ -11,7 +11,6 @@ import {
 } from "./utils";
 import {trimStart} from "../../AOM/utils";
 import {observer} from "mobx-react";
-import {useOpenSidePanel} from "../side-panel";
 import {NodeElement} from "../../AOM/types";
 
 const HeadingWrapper = styled.div<{ isHovered: boolean; color: string, onClick?: any }>`
@@ -50,12 +49,10 @@ export interface HorizontalBlockTemplateProps {
 export const HorizontalBlockTemplate = observer(React.forwardRef(
     ({header, children, style, node, color = "#ab8900"}: HorizontalBlockTemplateProps, ref: React.Ref<any>) => {
         const [isHovered, setHovered] = React.useState(false);
-        const openSidePanel = useOpenSidePanel();
 
         return (
             <HeadingWrapper isHovered={isHovered} style={style} ref={ref} color={color}>
                 <Role color={color} onMouseOver={() => setHovered(true)} onMouseOut={() => setHovered(false)}
-                      onClick={(event) => openSidePanel(node, event)}
                       isSelected={node?.isOpenInSidePanel}
                 >
                     {header}

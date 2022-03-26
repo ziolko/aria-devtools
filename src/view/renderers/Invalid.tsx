@@ -3,7 +3,6 @@ import React, {useRef} from "react";
 import {borderRadius, hoveredBoxShadow, selectedBoxShadow, useFocusable} from "./utils";
 import { ComponentProps } from "./utils";
 import { observer } from "mobx-react";
-import {useOpenSidePanel} from "../side-panel";
 
 const color = "#811515";
 
@@ -49,7 +48,6 @@ export default observer(function Unknown({ node }: ComponentProps) {
   const [isHovered, setHovered] = React.useState(false);
   const [ref, style] = useFocusable(node);
   const roleRef = useRef<HTMLSpanElement>(null);
-  const openSidePanel = useOpenSidePanel();
 
   return (
     <InvalidWrapper
@@ -65,7 +63,6 @@ export default observer(function Unknown({ node }: ComponentProps) {
       <InvalidRole ref={roleRef}
                         onMouseOver={() => setHovered(true)}
                         onMouseOut={() => setHovered(false)}
-                        onClick={(event) => openSidePanel(node, event)}
                         isSelected={node?.isOpenInSidePanel}>
         ⚠️️ Invalid role: {node.role} (tag: {node.htmlTag})
       </InvalidRole>

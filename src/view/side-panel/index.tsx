@@ -35,42 +35,27 @@ export function useOpenSidePanel() {
 }
 
 export default observer(function SidePanel() {
-    const store = useStore();
-    const openSidePanel = useOpenSidePanel();
-    const [width, setWidth] = useStorage<number>("side-panel-size", 400);
-    const [dragState, setDragState] = useState<ResizablePaneState>(null)
+    const [isOpen, setOpen] = useStorage<boolean>("side-panel-github-visible-1", true);
 
-    const onMouseDown = (event: React.MouseEvent) => {
-        setDragState({startCursorX: event.clientX, currentCursorX: event.clientX});
-    }
-
-    const onMouseMove = (event: React.MouseEvent) => {
-        setDragState(dragState && {...dragState, currentCursorX: event.clientX});
-    }
-
-    const currentWidth = (width ?? 0) + (dragState ? (dragState.startCursorX - dragState.currentCursorX) : 0)
-    const onMouseUp = () => {
-        if (dragState != null) {
-            setWidth(currentWidth)
-            setDragState(null);
-        }
-    };
-
-    if (!store.sidePanelNode) {
+    if(!isOpen) {
         return null;
     }
 
     return (
-        <ActionsBar style={{flexBasis: currentWidth}}>
-            <ResizeHandler onMouseDown={onMouseDown}
-                           onMouseUp={dragState ? onMouseUp : undefined}
-                           onMouseMove={dragState ? onMouseMove : undefined}
-                           isActive={!!dragState}/>
+        <ActionsBar style={{ flexBasis: 500 }}>
             <Header>
-                <Title>{store.sidePanelNode.role || store.sidePanelNode.htmlTag}</Title>
-                <CloseIcon onClick={() => openSidePanel(null)}>x</CloseIcon>
+                <Title style={{ fontSize: 20 }}>ARIA DevTools needs your help!</Title>
+                <CloseIcon onClick={() => setOpen(false)}>x</CloseIcon>
             </Header>
-            <HelpArticles>{roles.map(Component => <Component node={store.sidePanelNode}/>)}</HelpArticles>
+            <HelpArticles style={{ fontSize: 18 }}>
+                <p>We don't ask for much. Please just show your support by starring ARIA DevTools repository on Github.</p>
+                <p>⭐⭐⭐⭐⭐</p>
+                <p>
+                    <a href={"https://github.com/ziolko/aria-devtools"} target="_blank" rel="noopener noreferrer">
+                    Open repository
+                    </a>
+                </p>
+            </HelpArticles>
             <UnknownRole/>
         </ActionsBar>
     );

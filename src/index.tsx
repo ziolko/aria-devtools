@@ -52,11 +52,6 @@ let isEnabled = false;
 
 window.isLoaded = true;
 window.enable = async () => {
-  // if (Date.now() > 1598832000000) {
-  //   alert("This version of ARIA Dev Tools is no longer supported. Please update to the newest version.");
-  //   return;
-  // }
-
   isEnabled = true;
   await waitForBody();
   if (isEnabled) {

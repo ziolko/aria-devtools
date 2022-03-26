@@ -11,7 +11,6 @@ import {
     useFocusable
 } from "./utils";
 import {observer} from "mobx-react";
-import {useOpenSidePanel} from "../side-panel";
 import {trimStart} from "../../AOM/utils";
 import {getAccessibleNameOf} from "../../AOM/types";
 
@@ -28,7 +27,6 @@ const Role = styled.span<{ isSelected: boolean }>`
   position: relative;
   margin-right: 3px;
   padding: 0 2px;
-  cursor: pointer;
   background: #548a33;
   line-height: 14px;
   border-radius: ${borderRadius};
@@ -56,7 +54,6 @@ export default observer(function Link({node}: ComponentProps) {
     const [isHovered, setHovered] = React.useState(false);
     const [ref, style] = useFocusable(node);
     const onClick = useClick(node);
-    const openSidePanel = useOpenSidePanel();
 
     const children = trimStart(node.children) ?? [];
 
@@ -72,7 +69,6 @@ export default observer(function Link({node}: ComponentProps) {
         <LinkWrapper ref={ref} style={style} isHovered={isHovered}>
             <Role onMouseOver={() => setHovered(true)}
                   onMouseOut={() => setHovered(false)}
-                  onClick={(event) => openSidePanel(node, event)}
                   isSelected={node?.isOpenInSidePanel}>
                 🔗
                 <IssuesBadge node={node}/>

@@ -6,7 +6,7 @@ import { observer } from "mobx-react";
 const Inline = styled.span`
   --block-display: inline-block;
 
-  cursor: default;
+  //cursor: default;
   border-radius: 2px;
 `;
 

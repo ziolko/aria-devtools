@@ -6,7 +6,6 @@ import font from "./font";
 // @ts-ignore
 import root from "react-shadow";
 import AriaLive from "./AriaLive";
-import Feedback from "./Feedback";
 import SidePanel from "./side-panel";
 
 const Layout = styled(root.div)`
