@@ -40,16 +40,22 @@ const Role = styled.span<{ isSelected: boolean }>`
   ${props => props.isSelected && selectedBoxShadow};
 `;
 
-const LinkContent = styled.span`
+const LinkContent = styled.span<{ hasDescription: boolean }>`
   text-decoration: underline;
   cursor: pointer;
 
   :hover {
     background: #555;
   }
+
+  ${props => props.hasDescription && `::after {
+    content: "🛈";
+    padding-left: .3em;
+  }`};
 `;
 
 export default observer(function Link({node}: ComponentProps) {
+    const description = node.description
     const render = React.useContext(renderContext);
     const [isHovered, setHovered] = React.useState(false);
     const [ref, style] = useFocusable(node);
@@ -73,8 +79,9 @@ export default observer(function Link({node}: ComponentProps) {
                 🔗
                 <IssuesBadge node={node}/>
             </Role>
-            <LinkContent onClick={onClick}>
-                {getContent()}
+            <LinkContent onClick={onClick} title={description}
+                         hasDescription={!!description && !node.isFocused}>
+                {getContent()}{node.isFocused && description && ` - ${description}`}
             </LinkContent>
         </LinkWrapper>
     );
