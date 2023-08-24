@@ -40,7 +40,9 @@ export default function traverse(htmlNode: Node, traversedNodes = new Map<Node, 
     // @ts-ignore
     properties.invalid = node.validity ? !node.validity.valid : undefined;
 
-    node.childNodes.forEach(subNOde => {
+    const children = node.shadowRoot == null ? node.childNodes : node.shadowRoot.childNodes;
+
+    children.forEach(subNOde => {
         const child = traverse(subNOde, traversedNodes);
         if (child) {
             child.htmlParent = result;

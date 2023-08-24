@@ -1,9 +1,10 @@
 import Store from "./index";
 import traverse from "../AOM/traverse";
-import {getNodeKey} from "../AOM/utils";
+import {activeElement, getNodeKey} from "../AOM/utils";
 import {AOMElement, NodeElement} from "../AOM/types";
 import {runInAction} from "mobx";
 import {IdleScheduler} from "./utils";
+import ally from 'ally.js';
 
 export default class Observer {
     store: Store = new Store();
@@ -18,14 +19,17 @@ export default class Observer {
         this.store.register(this.root);
         this.store.clearActiveAlerts();
 
-        this.observer = new MutationObserver(this.onMutation);
-        this.observer.observe(root, {
-            attributes: true,
-            childList: true,
-            characterData: true,
-            subtree: true,
-            attributeOldValue: true
-        });
+        this.observer = ally.observe.shadowMutations({
+            context: root,
+            callback: this.onMutation,
+            config: {
+                attributes: true,
+                childList: true,
+                characterData: true,
+                subtree: true,
+                attributeOldValue: true
+            }
+        })
 
         document.body.addEventListener("blur", this.onBlur, true);
         document.body.addEventListener("focus", this.onFocus, true);
@@ -110,7 +114,7 @@ export default class Observer {
                 }
             });
 
-            const focusedKey = getNodeKey(document.activeElement as Node);
+            const focusedKey = getNodeKey(activeElement() as Node);
             const focusedEl = this.store.getElement(focusedKey);
 
             this.store.focus(focusedEl);
@@ -163,7 +167,7 @@ export default class Observer {
 
 
     disconnect() {
-        this.observer.disconnect();
+        this.observer.disconnect && this.observer.disconnect();
         this.scheduler.stop();
         document.body.removeEventListener("focus", this.onFocus, true);
         document.body.removeEventListener("blur", this.onBlur, true);

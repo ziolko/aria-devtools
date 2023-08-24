@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@popperjs/core": "^2.0.6",
+    "ally.js": "^1.4.1",
     "mobx": "^5.15.4",
     "mobx-react": "^6.1.8",
     "parcel-bundler": "^1.12.4",
@@ -50,6 +51,7 @@
     "babel-plugin-styled-components": "^1.10.7",
     "bowser": "^2.11.0",
     "chai": "^4.2.0",
+    "chai-wait-for": "^1.0.4",
     "mocha": ">=7",
     "prop-types": "^15.7.2",
     "source-map-support": "^0.5.16",
