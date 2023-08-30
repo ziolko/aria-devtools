@@ -69,6 +69,10 @@ export default class Observer {
         });
     };
 
+    private containsShadowRoot(nodes: NodeList): boolean {
+        return Array.from(nodes).some(x => (x as Element).shadowRoot);
+    }
+
     private onMutation = (mutations: MutationRecord[]) => {
         runInAction("mutation", () => {
             for (const mutation of mutations) {
@@ -82,6 +86,12 @@ export default class Observer {
                     }
 
                     this.updateNode(mutation.target);
+                }
+                else {
+                    if (this.containsShadowRoot(mutation.addedNodes) || this.containsShadowRoot(mutation.removedNodes)) {
+                        this.root = traverse(document.body);
+                        this.store.update(this.root!);
+                    }
                 }
             }
 
