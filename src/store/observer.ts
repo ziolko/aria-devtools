@@ -10,10 +10,12 @@ export default class Observer {
     store: Store = new Store();
     observer: MutationObserver;
     root: AOMElement;
+    htmlRoot: HTMLElement;
     scheduler: IdleScheduler;
     isSecondaryUpdateScheduled = false;
 
     constructor(root: HTMLElement) {
+        this.htmlRoot = root;
         this.root = traverse(root);
 
         this.store.register(this.root);
@@ -89,7 +91,7 @@ export default class Observer {
                 }
                 else {
                     if (this.containsShadowRoot(mutation.addedNodes) || this.containsShadowRoot(mutation.removedNodes)) {
-                        this.root = traverse(document.body);
+                        this.root = traverse(this.htmlRoot);
                         this.store.update(this.root!);
                     }
                 }
