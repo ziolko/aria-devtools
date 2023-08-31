@@ -12,8 +12,22 @@ export function isHidden(el: HTMLElement): boolean {
   );
 }
 
+export function activeElement(root: Document | ShadowRoot = document): Element | null {
+  const activeEl = root.activeElement;
+
+  if (!activeEl) {
+    return null;
+  }
+
+  if (activeEl.shadowRoot) {
+    return activeElement(activeEl.shadowRoot);
+  }
+
+  return activeEl;
+}
+
 export function isFocused(el: HTMLElement) {
-  return document.activeElement === el && el !== document.body;
+  return activeElement() === el && el !== document.body;
 }
 
 export function isInline(el: HTMLElement) {

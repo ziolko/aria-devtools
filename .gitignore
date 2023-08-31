@@ -5,3 +5,5 @@ yarn-error.log*
 /node_modules
 /.cache
 /extension/inject.js
+/extension/inject.js.map
+/dist
