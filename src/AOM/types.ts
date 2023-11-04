@@ -405,6 +405,7 @@ export type AriaRole =
     | "main"
     | "navigation"
     | "paragraph"
+    | "progressbar"
     | "region"
     | "row"
     | "rowgroup"
