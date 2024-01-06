@@ -28,6 +28,7 @@ import RadioGroup from "./RadioGroup";
 import Tab from "./Tab";
 import TabPanel from "./TabPanel";
 import Invalid from "./Invalid";
+import Details from "./Details";
 
 type RendererMap = { [key in string]: React.FunctionComponent<ComponentProps> };
 
@@ -97,7 +98,8 @@ const renderers: RendererMap = {
 };
 
 const htmlTagRenderers: RendererMap = {
-  label: Label
+  details: Details,
+  label: Label,
 };
 
 export default function render(element: AOMElement | AOMElement[]): any {
