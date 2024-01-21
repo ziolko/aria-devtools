@@ -154,7 +154,6 @@ const tagsWithNullRoleMapping = [
   "span",
   "strong",
   "sub",
-  "summary",
   "sup",
   "template",
   "time",

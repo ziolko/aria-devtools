@@ -546,6 +546,7 @@ export class RawNodeProperties {
     @observable invalid?: boolean = undefined;
     @observable disabled?: boolean = undefined;
     @observable checked?: boolean = undefined;
+    @observable open?: boolean = undefined;
     @observable indeterminate?: boolean = undefined;
     @observable tabIndex: number = -1;
     @observable colSpan?: number = undefined;
@@ -722,7 +723,7 @@ export class Aria {
             return {role: "textbox", ariaMultiline: true};
         }
 
-        if (htmlTag === "button") {
+        if (["button", "summary"].includes(htmlTag)) {
             return {role: "button"};
         }
 
@@ -999,6 +1000,10 @@ export class Aria {
 
     @computed get htmlChecked() {
         return this.rawProperties["checked"];
+    }
+
+    @computed get htmlOpen() {
+        return this.rawProperties["open"];
     }
 
     @computed get headers() {
