@@ -32,12 +32,12 @@ function unmount() {
 }
 
 function waitForBody() {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     if (document.body) {
       return resolve();
     }
 
-    const observer = new MutationObserver(function() {
+    const observer = new MutationObserver(function () {
       if (document.body) {
         observer.disconnect();
         resolve();
@@ -50,8 +50,8 @@ function waitForBody() {
 
 let isEnabled = false;
 
-window.isLoaded = true;
-window.enable = async () => {
+window.isAriaDevToolsLoaded = true;
+window.enableAriaDevTools = async () => {
   isEnabled = true;
   await waitForBody();
   if (isEnabled) {
@@ -59,7 +59,7 @@ window.enable = async () => {
   }
 };
 
-window.disable = async () => {
+window.disableAriaDevTools = async () => {
   isEnabled = false;
   await waitForBody();
   if (!isEnabled) {
@@ -68,7 +68,7 @@ window.disable = async () => {
 };
 
 if (module.hot) {
-  module.hot.accept(function() {
+  module.hot.accept(function () {
     if (isEnabled) {
       mount();
     }
