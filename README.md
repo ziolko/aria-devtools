@@ -8,7 +8,7 @@ It's now easy to spot missing ARIA labels, misused ARIA roles, and incomplete ke
 
 ![Screeshot of ARIA DevTools](https://lh3.googleusercontent.com/MhZVpZIrzkP7QEQqJYy5qOfvJuM3Ns52Ri7npeU7XHl24buihw-b8d9cl1jeL8hvuvOHaJA_=w640-h400-e365-rj-sc0x00ffffff)
 
-This extension is available for free for [Chrome](https://chrome.google.com/webstore/detail/aria-devtools/dneemiigcbbgbdjlcdjjnianlikimpck?hl=en) and [Firefox](https://addons.mozilla.org/pl/firefox/addon/aria-devtools/).
+This extension is available for free for [Chrome](https://chrome.google.com/webstore/detail/aria-devtools/dneemiigcbbgbdjlcdjjnianlikimpck?hl=en) and [Firefox](https://addons.mozilla.org/firefox/addon/aria-devtools/).
 
 > [!IMPORTANT]  
 > Recently I've dropped my full time job to pursue a dream of being an independent developer working on my own projects. To make it sustainable I have to be very careful on what I spend my time on. I would love to work further on ARIA DevTools if I find a sponsor of the project (I don't want to make the extension paid). If you are interested feel free to contact me at mateusz@roombelt.com.
