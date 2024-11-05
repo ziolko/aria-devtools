@@ -102,7 +102,6 @@ describe("HTML-ARIA mappings", () => {
         <span />
         <strong />
         <sub />
-        <summary />
         <sup />
         <template />
         <time />
@@ -115,7 +114,7 @@ describe("HTML-ARIA mappings", () => {
       </div>
     );
 
-    expect(AOM.result.htmlChildren.length).to.equal(63);
+    expect(AOM.result.htmlChildren.length).to.equal(62);
 
     AOM.result.htmlChildren.forEach(x => {
       const comment = x instanceof NodeElement && `HTML tag ${x.htmlTag}`;
@@ -350,5 +349,10 @@ describe("HTML-ARIA mappings", () => {
   it("Should map option to option", () => {
     const { AOM } = sandbox(<option id="result" />);
     expect(AOM.result.role).to.be.equal("option");
+  });
+
+  it("Should map summary to button", () => {
+    const { AOM } = sandbox(<summary id="result" />);
+    expect(AOM.result.role).to.be.equal("button");
   });
 });
