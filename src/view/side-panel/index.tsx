@@ -1,35 +1,32 @@
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
-import {observer} from "mobx-react";
-
-import {useStore} from "../../store-context";
-import {NodeElement} from "../../AOM/types";
+import { observer } from "mobx-react";
 
 export default observer(function SidePanel() {
-    const [isOpen, setOpen] = useStorage<boolean>("side-panel-github-visible-1", true);
+  const [isOpen, setOpen] = useStorage<boolean>("side-panel-github-visible-55", true);
 
-    if(!isOpen) {
-        return null;
-    }
+  if (!isOpen) {
+    return null;
+  }
 
-    return (
-        <ActionsBar style={{ flexBasis: 500 }}>
-            <Header>
-                <Title style={{ fontSize: 20 }}>ARIA DevTools needs your help!</Title>
-                <CloseIcon onClick={() => setOpen(false)}>x</CloseIcon>
-            </Header>
-            <HelpArticles style={{ fontSize: 18 }}>
-                <p>We don't ask for much. Please just show your support by starring ARIA DevTools repository on Github.</p>
-                <p>⭐⭐⭐⭐⭐</p>
-                <p>
-                    <a href={"https://github.com/ziolko/aria-devtools"} target="_blank" rel="noopener noreferrer">
-                    Open repository
-                    </a>
-                </p>
-            </HelpArticles>
-            <UnknownRole/>
-        </ActionsBar>
-    );
+  return (
+    <ActionsBar style={{ flexBasis: 500 }}>
+      <Header>
+        <Title style={{ fontSize: 20 }}>ARIA DevTools needs your help!</Title>
+        <CloseIcon onClick={() => setOpen(false)}>x</CloseIcon>
+      </Header>
+      <HelpArticles style={{ fontSize: 18 }}>
+        <p>We don't ask for much. Please just show your support by starring ARIA DevTools repository on Github.</p>
+        <p>⭐⭐⭐⭐⭐</p>
+        <p>
+          <a href={"https://github.com/ziolko/aria-devtools"} target="_blank" rel="noopener noreferrer">
+            Open repository
+          </a>
+        </p>
+      </HelpArticles>
+      <UnknownRole />
+    </ActionsBar>
+  );
 });
 
 const Title = styled.div`
@@ -42,7 +39,7 @@ const Header = styled.div`
   display: flex;
   font-size: 16px;
   padding: 4px 0;
-`
+`;
 
 const CloseIcon = styled.div`
   font-size: 20px;
@@ -56,14 +53,14 @@ const CloseIcon = styled.div`
   :hover {
     opacity: 1;
   }
-`
+`;
 
 const ResizeHandler = styled.div<{ isActive: boolean }>`
   position: absolute;
   top: 0;
   bottom: 0;
-  left: ${props => props.isActive ? '-1000px' : '0'};
-  width: ${props => props.isActive ? '2000px' : '16px'};
+  left: ${(props) => (props.isActive ? "-1000px" : "0")};
+  width: ${(props) => (props.isActive ? "2000px" : "16px")};
   cursor: col-resize;
   z-index: 1000;
 `;
@@ -87,20 +84,21 @@ const ActionsBar = styled.div`
 
 const HelpArticles = styled.div`
 ;
-`
+`;
 
-const UnknownRole = styled(({className}) => {
-    return (
-        <div className={className}>
-            <p>
-                There's no documentation for this ARIA role yet.
-            </p>
-            <p>
-                Please request support for this aria role on our{" "}
-                <a href={"https://github.com/ziolko/aria-devtools/issues"} target={"_blank"}>issue tracker</a>.
-            </p>
-        </div>
-    )
+const UnknownRole = styled(({ className }) => {
+  return (
+    <div className={className}>
+      <p>There's no documentation for this ARIA role yet.</p>
+      <p>
+        Please request support for this aria role on our{" "}
+        <a href={"https://github.com/ziolko/aria-devtools/issues"} target={"_blank"}>
+          issue tracker
+        </a>
+        .
+      </p>
+    </div>
+  );
 })`
   display: none;
 
@@ -109,27 +107,26 @@ const UnknownRole = styled(({className}) => {
   }
 `;
 
-
 function useStorage<T>(key: string, defaultValue: T): [T | undefined, (value: T) => void] {
-    const [value, setValue] = useState<T>();
+  const [value, setValue] = useState<T>();
 
-    useEffect(() => {
-        setValue(undefined);
-        let isCurrent = true;
-        // @ts-ignore
-        chrome.storage.local.get([key], (result) => {
-            isCurrent && setValue(result[key] ?? defaultValue)
-        });
-        return () => {
-            isCurrent = false;
-        }
-    }, [key])
+  useEffect(() => {
+    setValue(undefined);
+    let isCurrent = true;
+    // @ts-ignore
+    chrome.storage.local.get([key], (result) => {
+      isCurrent && setValue(result[key] ?? defaultValue);
+    });
+    return () => {
+      isCurrent = false;
+    };
+  }, [key]);
 
-    const updateValue = useCallback((newValue: T) => {
-        setValue(newValue)
-        // @ts-ignore
-        chrome.storage.local.set({[key]: newValue});
-    }, [])
+  const updateValue = useCallback((newValue: T) => {
+    setValue(newValue);
+    // @ts-ignore
+    chrome.storage.local.set({ [key]: newValue });
+  }, []);
 
-    return [value, updateValue];
+  return [value, updateValue];
 }
