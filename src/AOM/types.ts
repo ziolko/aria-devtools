@@ -153,7 +153,7 @@ export class HtmlTableContext {
     @computed get rows(): NodeElement[][] {
         const result = new Table();
 
-        const rowNodes = this.getNodes(this.root, "tr", "tbody", "tfooter", "thead")
+        const rowNodes = this.getNodes(this.root, "tr", "tbody", "tfoot", "thead")
             .map(node => (node.htmlTag === "tr" ? node : this.getNodes(node, "tr")))
             .flat();
 
