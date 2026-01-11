@@ -355,4 +355,23 @@ describe("HTML-ARIA mappings", () => {
     const { AOM } = sandbox(<summary id="result" />);
     expect(AOM.result.role).to.be.equal("button");
   });
+
+  it("Should map progress to progressbar", () => {
+    const { AOM } = sandbox(
+      <div>
+        <progress id="progress1" value="5" />
+        <progress id="progress2" max="10" value="5" />
+      </div>
+    );
+
+    expect(AOM.progress1.role).to.be.equal("progressbar");
+    expect(AOM.progress1.attributes.ariaValueMin).to.be.equal(0);
+    expect(AOM.progress1.attributes.ariaValueMax).to.be.equal(100);
+    expect(AOM.progress1.attributes.ariaValueNow).to.be.equal(5);
+
+    expect(AOM.progress2.role).to.be.equal("progressbar");
+    expect(AOM.progress2.attributes.ariaValueMin).to.be.equal(0);
+    expect(AOM.progress2.attributes.ariaValueMax).to.be.equal(10);
+    expect(AOM.progress2.attributes.ariaValueNow).to.be.equal(5);
+  });
 });
