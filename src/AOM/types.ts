@@ -405,6 +405,7 @@ export type AriaRole =
     | "main"
     | "navigation"
     | "paragraph"
+    | "progressbar"
     | "region"
     | "row"
     | "rowgroup"
@@ -484,6 +485,7 @@ export class RawNodeAttributes {
     @observable scope?: string = undefined;
     @observable min?: string = undefined;
     @observable max?: string = undefined;
+    @observable value?: string = undefined;
 
     @observable "aria-activedescendant"?: HtmlID = undefined;
     @observable "aria-atomic"?: boolean = undefined;
@@ -773,6 +775,16 @@ export class Aria {
 
         if (htmlTag === "svg") {
             return {role: "graphics-document"};
+        }
+
+        if (htmlTag === "progress") {
+            return {
+                role: "progressbar",
+                // https://w3c.github.io/aria/#progressbar
+                ariaValueMin: 0,
+                ariaValueMax: this.rawAttributes.max ?? 100,
+                ariaValueNow: this.rawAttributes.value
+            };
         }
 
         if (htmlTag === "table") {

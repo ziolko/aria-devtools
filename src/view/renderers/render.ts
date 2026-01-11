@@ -29,6 +29,7 @@ import Tab from "./Tab";
 import TabPanel from "./TabPanel";
 import Invalid from "./Invalid";
 import Details from "./Details";
+import ProgressBar from "./ProgressBar";
 
 type RendererMap = { [key in string]: React.FunctionComponent<ComponentProps> };
 
@@ -95,6 +96,7 @@ const renderers: RendererMap = {
   marquee: Block,
   timer: Block,
   spinbutton: TextBox,
+  progressbar: ProgressBar,
 };
 
 const htmlTagRenderers: RendererMap = {
