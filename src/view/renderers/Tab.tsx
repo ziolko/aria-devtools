@@ -37,7 +37,7 @@ export const ClickableHorizontalBlock = observer(function ClickableHorizontalBlo
     );
 });
 
-export function HeaderTag({isVisible, children}: { isVisible: boolean | undefined, children: React.ReactChild }) {
+export function HeaderTag({isVisible, children}: { isVisible: boolean | undefined, children: React.ReactNode }) {
     return isVisible ? <span style={{textTransform: 'none'}}> {children}</span> : null
 }
 

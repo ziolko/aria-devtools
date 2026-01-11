@@ -13,7 +13,7 @@ export default observer(function ProgressBar({ node }: ComponentProps) {
   const header = (
       <>
           {node.role}
-          <HeaderTag isVisible={node.attributes.ariaValueNow}>[{value}]</HeaderTag>
+          <HeaderTag isVisible={!!node.attributes.ariaValueNow}>[{value}]</HeaderTag>
       </>
   );
 
