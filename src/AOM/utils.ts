@@ -4,7 +4,8 @@ import { AOMElement, NodeElement, TextElement } from "./types";
 export function isHidden(el: HTMLElement): boolean {
   const { display, visibility } = window.getComputedStyle(el);
   return (
-    !!el.getAttribute("hidden") ||
+    el.hasAttribute("hidden") ||
+    el.hasAttribute("inert") ||
     el.getAttribute("aria-hidden") === "true" ||
     display === "none" ||
     visibility === "hidden" ||

@@ -8,5 +8,6 @@ require("./dynamic-html.test");
 require("./accessible-name.test");
 require("./relations.test");
 require("./tables.test");
+require("./visibility.test");
 
 mocha.run();
