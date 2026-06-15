@@ -3,6 +3,22 @@ import {getNodeKey} from "./utils";
 
 const ignoredHtmlElements = ["script", "noscript", "style"];
 
+// Follows the flattened (composed) tree, like the browser's accessibility tree:
+// a shadow host exposes its shadow root, a <slot> exposes its assigned nodes
+// (or its fallback children when nothing is slotted), everything else its light DOM.
+function getTraversableChildNodes(node: HTMLElement): Iterable<Node> {
+    if (node.shadowRoot != null) {
+        return node.shadowRoot.childNodes;
+    }
+
+    if (node instanceof HTMLSlotElement) {
+        const assigned = node.assignedNodes();
+        return assigned.length > 0 ? assigned : node.childNodes;
+    }
+
+    return node.childNodes;
+}
+
 export default function traverse(htmlNode: Node, traversedNodes = new Map<Node, AOMElement>()): AOMElement {
     if (traversedNodes.has(htmlNode)) {
         return traversedNodes.get(htmlNode);
@@ -40,10 +56,10 @@ export default function traverse(htmlNode: Node, traversedNodes = new Map<Node, 
     // @ts-ignore
     properties.invalid = node.validity ? !node.validity.valid : undefined;
 
-    const children = node.shadowRoot == null ? node.childNodes : node.shadowRoot.childNodes;
+    const children = getTraversableChildNodes(node);
 
-    children.forEach(subNOde => {
-        const child = traverse(subNOde, traversedNodes);
+    Array.from(children).forEach(subNode => {
+        const child = traverse(subNode, traversedNodes);
         if (child) {
             child.htmlParent = result;
             result.htmlChildren.push(child);
